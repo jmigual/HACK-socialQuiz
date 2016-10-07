@@ -1,9 +1,11 @@
-//Room questions
 
 /getuserid&mail=canons@hola.com
 {
   "id" : 12345678
 }
+
+//Room questions
+
 
 /getroomquestion&idroom=idroom
 {
@@ -26,7 +28,7 @@
 }
 
 
-
+//Quizz questions
 
 /getquestion&idroom=idroom&iduser=iduser
 {
