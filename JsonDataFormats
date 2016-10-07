@@ -1,4 +1,10 @@
 //Room questions
+
+/getuserid&mail=canons@hola.com
+{
+  "id" : 12345678
+}
+
 /getroomquestion&idroom=idroom
 {
   "questions":
@@ -8,7 +14,7 @@
   ]
 }
 
-/postroomquestions&idroom=idroom&iduser=iduser
+/postroomanswers&idroom=idroom&iduser=iduser
 {
   "idroom" :234,
   "iduser" :23456,
@@ -26,9 +32,15 @@
 {
   "id": 1234,
   "question": "Whats your age?",
-  "answers": ["Ans1", "Ans2"]
+  "answers": [{"id": 34,"text":"Ans1"}]
 }
 
-/post
+/postanswer&quizquestionid=23&answerid=24
+{
+  "correct": false,
+  "question": "Whats your age?",
+  "correctanswer": {"id": 34,"text":"Ans1"} 
+}
+
 
 
