@@ -1,10 +1,25 @@
 useful links:
-http://www.w3schools.com/jquery/ajax_post.asp
+http://www.w3schools.com/jquery/jquery_ajax_intro.asp
 
+//loggin
 /getuserid&mail=canons@hola.com
 {
   "id" : 12345678
 }
+
+//Creating a room
+/createroom&userid=12345678
+{
+  "id" : 322
+}
+
+/fillroom
+{
+  "id":322,
+  "question": ["What would you do?", "If everyone..."],
+  "mail": ["iwouldlike@yourtuuseme","someday@iwill.dontworry]
+}
+
 
 //Room questions
 
@@ -18,7 +33,7 @@ http://www.w3schools.com/jquery/ajax_post.asp
   ]
 }
 
-/postroomanswers&idroom=idroom&iduser=iduser
+/postroomanswers
 {
   "idroom" :234,
   "iduser" :23456,
