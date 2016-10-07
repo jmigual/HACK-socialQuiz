@@ -1,0 +1,34 @@
+//Room questions
+/getroomquestion&idroom=idroom
+{
+  "questions":
+  [
+    {"id":2113, "text":"How do you feel?" }, 
+    {"id":2114, "text":"Do you want a kiss?" }
+  ]
+}
+
+/postroomquestions&idroom=idroom&iduser=iduser
+{
+  "idroom" :234,
+  "iduser" :23456,
+  "answers":
+  [
+    {"id":2113, "text":"Great" }, 
+    {"id":2114, "text":"Not from you" }
+  ]
+}
+
+
+
+
+/getquestion&idroom=idroom&iduser=iduser
+{
+  "id": 1234,
+  "question": "Whats your age?",
+  "answers": ["Ans1", "Ans2"]
+}
+
+/post
+
+
