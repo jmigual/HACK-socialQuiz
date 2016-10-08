@@ -2,22 +2,29 @@
 
 from flask import Flask
 from flask import request
-from flask.ext.mysql import MySQL
+from flaskext.mysql import MySQL
 import json
 
 app = Flask(__name__)
 
+mysql = MySQL()
 app.config['MYSQL_DATABASE_USER'] = "socialuser"
 app.config['MYSQL_DATABASE_PASSWORD'] = '12345678'
 app.config['MYSQL_DATABASE_DB'] = 'social_quiz'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+mysql.init_app(app)
+
+frontDir = "../frontend/"
+
 
 @app.route('/')
 def index():
+    path = frontDir + "index.html"
+    print(path)
     return "Hello world"
 
 
-@app.route('/register/')
+@app.route('/register')
 def register():
     # To obtain the mail
     email = request.args.get('email')
