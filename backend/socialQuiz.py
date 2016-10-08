@@ -39,6 +39,13 @@ def join_room():
     db.exec_query("INSERT INTO 	RoomMembers (roomId, userId) VALUES (%s,%s)", [idRoom, id_user])
     return json.dumps({"id": id_user})
     
+@app.route('/answeredRoom')
+def answered_room():
+    idRoom = request.args.get('idRoom')
+    user_id = request.args.get('userId')
+    values = db.exec_query("SELECT a.id FROM answer a INNER JOIN question q WHERE a.questionId = q.id AND q.roomId = %s AND a.userId= %s",[idRoom,user_id]);
+    #return json.dumps(values)
+    return json.dumps({"answered": len(values) > 0 })
     
 @app.route('/getUserId')
 def get_user_id():
@@ -83,18 +90,21 @@ def fill_room():
 def open_room():
     id_room = request.args.get('id')
     values = db.exec_query("UPDATE Room r SET r.status='started' WHERE r.id = %s", [id_room])
-    return "Updated state"
+    return "status='started'"
 
 @app.route('/closeRoom')
 def close_room():
     id_room = request.args.get('id')
     values = db.exec_query("UPDATE Room  r SET r.status='closed' WHERE r.id = %s", [id_room])
-    return "Updated state"
+    return "status='closed'"
     
 @app.route('/finishRoom')
 def finish_room():
     id_room = request.args.get('id')
     values = db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
+    ranking = []
+    #for
+    #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN 
     return "Updated state"
 
 @app.route('/statusRoom')

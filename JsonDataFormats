@@ -18,6 +18,11 @@ useful links:
   "id" : 12345678
 }
 
+/answeredRoom?idRoom=1&userId=3
+{
+    "answered": false
+}
+
 //loggin
 //Used to loggin, user must be in our database
 /getUserId&email=canons@hola.com
