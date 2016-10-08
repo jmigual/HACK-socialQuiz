@@ -1,9 +1,9 @@
 useful links:
-http://www.w3schools.com/jquery/jquery_ajax_intro.asp
+"http://www.w3schools.com/jquery/jquery_ajax_intro.asp"
 
 
 //register
-/*Used to register a user
+//Used to register a user
 /register&email=melape@lla.lo
 {
   "id" : 12345678
@@ -12,27 +12,27 @@ http://www.w3schools.com/jquery/jquery_ajax_intro.asp
 
 //join
 
-/*Returns the user id, it may be already in our database
+// Returns the user id, it may be already in our database
 /joinroom&idroom=23&email=melape@lla.lo
 {
   "id" : 12345678
 }
 
 //loggin
-/*Used to loggin, user must be in our database
+//Used to loggin, user must be in our database
 /getuserid&email=canons@hola.com
 {
   "id" : 12345678
 }
 
 //Creating a room
-/*Used by the admin to create a room, it returns the room id
+//Used by the admin to create a room, it returns the room id
 /createroom&userid=12345678
 {
   "id" : 322
 }
 
-/*Used by the admin to fill the info about the room
+//Used by the admin to fill the info about the room
 /fillroom
 {
   "id":322,
@@ -42,7 +42,7 @@ http://www.w3schools.com/jquery/jquery_ajax_intro.asp
 
 //Room questions
 
-/*Returns the questions of a room
+//Returns the questions of a room
 /getroomquestion&idroom=idroom
 {
   "questions":
@@ -52,7 +52,7 @@ http://www.w3schools.com/jquery/jquery_ajax_intro.asp
   ]
 }
 
-/*Used to save user room answers
+//Used to save user room answers
 /postroomanswers
 {
   "idroom" :234,
@@ -66,14 +66,14 @@ http://www.w3schools.com/jquery/jquery_ajax_intro.asp
 
 
 //Quizz questions
-/*Get's a quizz question for a user
+//Get's a quizz question for a user
 /getquestion&idroom=idroom&iduser=iduser
 {
   "id": 1234,
   "question": "Whats your age?",
   "answers": [{"id": 34,"text":"Ans1"}]
 }
-/*Sends the answer to a question of the quizz
+//Sends the answer to a question of the quizz
 /postanswer&quizquestionid=23&answerid=24
 {
   "correct": false,

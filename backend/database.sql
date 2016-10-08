@@ -14,7 +14,7 @@ CREATE TABLE Room
 CREATE TABLE Question
 (
 	id INT PRIMARY KEY,
-	roomId INT REFERENCES Room(id)
+	roomId INT REFERENCES Room(id),
 	question TEXT
 );
 
@@ -37,6 +37,6 @@ CREATE TABLE QuizQuestion
 CREATE TABLE QuizPossibleAnswer
 (
 	quizId INT,
-	answerId INT
+	answerId INT,
 	PRIMARY KEY(quizId, answerId)
 );
