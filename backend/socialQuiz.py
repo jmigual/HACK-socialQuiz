@@ -2,6 +2,7 @@
 
 from flask import Flask
 from flask import request
+import json
 
 app = Flask(__name__)
 
@@ -9,9 +10,9 @@ app = Flask(__name__)
 def index():
 	return "Hello world"
 
-@app.route('/register/<string:mail>')
-def register(mail):
-	return "Your mail is: " + mail + " " + request.args.get('mail')
+@app.route('/register/')
+def register():
+	return json.dumps({ "id" : 12345678 })
 
 
 if __name__ == '__main__':
