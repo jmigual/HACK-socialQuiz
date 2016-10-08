@@ -11,12 +11,13 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
+    
+
 	<div class="container-fluid" id="emailContainer" style="background: black">
 		<div class="row-fluid">
 			<div class="centering text-center">
 				<h3 style="color: white">Enter your email:</h3>
 				<h3 style="color: white"> <input style="background: black" type="text" id="emailInput"></h3>
-				</h3>
 			</div>
 		</div>
 	</div>
@@ -25,14 +26,33 @@
 	<div class="container-fluid" id="questionContainer" style="background: red; display: none;">
 		<div class="row-fluid">
 			<div class="centering text-center">
-			    <div class="container">
 				<h3 style="color: black" id="questionText">This will be replaced:</h3>
 				<h3 style="color: black"> <input style="background: red" type="text" id="answerInput"></h3>
-				</div>
 			</div>
 		</div>
 	</div>
 
+
+    <div class="container-fluid" id="adminContainer" style="background: green; display: none">
+		<div class="row-fluid">
+			<div class="centering text-center">
+				<h3 style="color: black">Admin tools:</h3>
+				<button type="button" class="btn btn-default" id="newRoom">Add new room</button>
+				<button type="button" class="btn btn-default">Manage existing rooms</button>
+			</div>
+		</div>
+	</div>
+
+	<div class="container-fluid" id="newRoomContainer" style="background: green; display: none;">
+		<div class="row-fluid">
+			<div class="centering text-center">
+				<h3 style="color: black">Add a new question:</h3>
+				<h3 style="color: black"> <input style="background: green" type="text" id="questionInput"></h3>
+				<button type="button" class="btn btn-default" id="finishRoom">Finish room</button>
+				<button type="button" class="btn btn-default" id="cancelRoom">Cancel</button>
+			</div>
+		</div>
+	</div>
 
 </body>
 </html>
