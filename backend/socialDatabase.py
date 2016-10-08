@@ -28,19 +28,30 @@ def run_query(query=''):
 	return data
 
 
-def register_or_get_email(email):
+def exec_query(query, bind_values):
 	conn = get_connection()
-	curs = conn.cursor()
-	print(email)
-	curs.execute("SELECT id FROM User WHERE email = %s", [email])
-	value = curs.fetchall()
-	if len(value) <= 0:
-		curs.execute("INSERT INTO User (email) VALUES (%s)", [email])
-		value = conn.insert_id()
+	cursor = conn.cursor()
+	cursor.execute(query, bind_values)
+
+	if query.upper().startswith('SELECT'):
+		data = cursor.fetchall()
+	elif query.upper().startswith('INSERT'):
+		data = conn.insert_id()
 		conn.commit()
 	else:
-		value = value[0][0]
-	curs.close()
+		conn.commit()
+		data = None
+	cursor.close()
 	conn.close()
-	print(value)
+	return data
+
+
+def register_or_get_email(email):
+	# Create new connection/cursor
+	value = exec_query("SELECT id FROM Users WHERE email = %s", [email])
+	if len(value) <= 0:
+		value = exec_query("INSERT INTO Users (email) VALUES (%s)", [email])
+	else:
+		value = value[0][0]
 	return value
+
