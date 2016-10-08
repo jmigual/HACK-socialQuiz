@@ -108,7 +108,7 @@ def get_question():
     if len(possibleQuestions) > 0:
         questionId = random.sample(possibleQuestions,1)
     else :
-        possibleQuestions = db.getAllQuestions(idRoom,idUser)
+        possibleQuestions = db.getAllQuestions(idRoom)
         questionId = random.sample(possibleQuestions,1)
     if len(possibleUsersToAsk) > 0:
         askedAboutId = random.sample(possibleUsersToAsk,1)

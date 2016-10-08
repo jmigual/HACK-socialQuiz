@@ -68,14 +68,23 @@ def getNonAnsweredQuestions(idRoom,idUser):
 def getNonAnsweredPeople(idRoom,idUser):
     return [8,2]
     
-def getAllQuestions(idRoom,idUser):
-    return [1,2,3,4]
+def getAllQuestions(idRoom):
+    #SELECT `id` FROM `question` WHERE `roomId` = roomId
+    ret = []
+    value = exec_query("SELECT 'id' FROM 'question' WHERE 'roomId' = %d", [idRoom])
+    for row in value:
+        ret.append(row[0])
+    return ret
     
 def getAllDifferentPeople(idRoom,idUser):
     return [1,2,3,4,5,6,7]
     
 def insertQuizQuestion(idRoom,idUser,askedAboutId,questionId):
+    
     return 3
     
-def getAnswer(questionId,askedAboutId):
-    return (4,"melapela")
+def getAnswer(questionId,userId):
+    value = exec_query("SELECT 'id','answer' FROM 'answer' WHERE 'questionId' = %d AND 'userId' = %d", [questionId,userId])
+    if len(value) != 1:
+        return (404, "Answer not found")
+    return (value[0][0],value[0][1])
