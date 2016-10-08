@@ -127,7 +127,7 @@ def get_question():
     answers = []
     (answerId,textId) = db.getAnswer(questionId,askedAboutId)
     answers.append((answerId,textId))
-    for i in max( range(numberOfAnswers-1) , len(otherUsers) :
+    for i in max( range(numberOfAnswers-1) , len(otherUsers) ):
         (answerId,textId) = db.getAnswer(questionId,otherUsers[i])
         answers.append((answerId,textId))
     
