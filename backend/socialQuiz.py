@@ -140,7 +140,7 @@ def get_question():
         answerJson.append({"id": answerId ,"text":textId})
         
     #SELECT `question` FROM `Question` WHERE `id` = 3
-    value = exec_query("SELECT 'question' FROM 'Question' WHERE 'id' = 3", [quizQuestionId])
+    value = exec_query("SELECT 'question' FROM 'Question' WHERE 'id' = %d", [quizQuestionId])
     question = value[0]
     
     return json.dumps({
