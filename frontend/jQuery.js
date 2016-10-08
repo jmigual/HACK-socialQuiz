@@ -6,39 +6,34 @@ function getUrlVars() {
 	return vars;
 }
 
-jQuery["postJSON"] = function( url, data, callback ) {
-    // shift arguments if data argument was omitted
-    if ( jQuery.isFunction( data ) ) {
-        callback = data;
-        data = undefined;
-    }
 
-    return jQuery.ajax({
-        url: url,
-        type: "POST",
-        contentType:"application/json; charset=utf-8",
-        dataType: "json",
-        data: data,
-        success: callback
-    });
-};
-
-var roomID = getUrlVars()["id"];
 var server = "http://localhost:5000";
 $(document).ready(function(){
 	$("#emailInput").focus();
 	$(document).keypress(function(e){
 		if (e.which == 13){
 			var email = $("#emailInput").val();
-			$.get(server + "/joinRoom?idRoom="+roomID+"&email="+email,function(data){
+			$.get(server + "/getUserId?email="+email,function(data){
 				serverRepply=JSON.parse(data);
 				var userID = serverRepply.id;
-				startQuestions(userID,roomID);
+				endEmail(userID,email);
 				$(document).off("keypress");
 			});
 		}
 	});
 });
+
+function endEmail(userID,email){
+	urlVars=getUrlVars();
+	if ("id" in urlVars){
+		var roomID = urlVars["id"];
+		$.get(server + "/joinRoom?idRoom="+roomID+"&email="+email);
+		startQuestions(userID,roomID)
+	}
+	else{
+		startAdmin(userID);
+	}
+}
 
 function startQuestions(userID, roomID){
 	$("#emailContainer").fadeOut();
@@ -46,6 +41,7 @@ function startQuestions(userID, roomID){
 	var questions;
 
 	$("#questionContainer").fadeIn();
+	//shitty way to do this
 	$.get(server+"/getRoomQuestion?idRoom="+roomID+"&idUser="+userID, function(data){
 		serverRepply=JSON.parse(data);
 		questions=serverRepply.questions;
@@ -83,4 +79,52 @@ function setQuestions(userID,roomID,questions,answers,i){
 			}
 		});
 	}
+}
+
+function startAdmin(userID){
+	$("#emailContainer").fadeOut();
+	$("#adminContainer").fadeIn();
+	$("#newRoom").click(function(){newRoom(userID)});
+}
+
+function newRoom(userID){
+	$("#adminContainer").fadeOut();
+	$("#newRoomContainer").fadeIn();
+	newQuestions=[];
+	$(document).keypress(function(e){
+		if (e.which==13){
+			newQuestions.push($("#questionInput").val());
+			$("#questionInput").val("");	
+		}
+	});
+	$("#finishRoom").click(function(){
+		$.get(server+"/createRoom?userId="+userID,function(data){
+			serverRepply=JSON.parse(data);
+			roomID=serverRepply.id;
+			$.ajax({
+	            url:server+"/fillRoom",
+	            data:JSON.stringify({
+	            	id:roomID,
+					question:newQuestions
+				}),
+				contentType:"application/json; charset=utf-8",
+				type:"POST"
+			});
+			$("#questionInput").val("");
+			$(document).off("keypress");
+			$("#finishRoom").off("click");
+			$("#cancelRoom").off("click");
+			$("#newRoomContainer").fadeOut();
+			$("#adminContainer").fadeIn();
+		});
+	});
+	$("#cancelRoom").click(function(){
+			$("#questionInput").val("");
+			$(document).off("keypress");
+			$("#finishRoom").off("click");
+			$("#cancelRoom").off("click");
+			$("#newRoomContainer").fadeOut();
+			$("#adminContainer").fadeIn();
+	});
+
 }
