@@ -27,21 +27,25 @@ def register():
 
 @app.route('/joinRoom')
 def join_room():
-    idRoom = request.args.get('idRoom')
+    _ = request.args.get('idRoom')
     email = request.args.get('email')
-    return json.dumps({"id": 12345678})
+    id_user = db.register_or_get_email(email)
+    return json.dumps({"id": id_user})
 
 
 @app.route('/getUserId')
 def get_user_id():
     email = request.args.get('email')
-    return json.dumps({"id": 12345678})
+    id_user = db.register_or_get_email(email)
+    return json.dumps({"id": id_user})
 
 
 @app.route('/createRoom')
 def create_room():
-    id = request.args.get('id')
-    return json.dumps({"id": 123 })
+    user_id = request.args.get('userId')
+    room_id = db.exec_query("INSERT INTO Room (creator) VALUES (%s)", [user_id])
+
+    return json.dumps({"id": room_id})
 
 
 @app.route('/fillRoom')
