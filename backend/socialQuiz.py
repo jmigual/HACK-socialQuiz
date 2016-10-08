@@ -82,13 +82,13 @@ def fill_room():
 @app.route('/openRoom')
 def open_room():
     id_room = request.args.get('id')
-    values = db.exec_query("UPDATE Room SET status='started' WHERE 'id' = %s", [id_room])
+    values = db.exec_query("UPDATE Room r SET r.status='started' WHERE r.id = %s", [id_room])
     return "Updated state"
 
 @app.route('/closeRoom')
 def close_room():
     id_room = request.args.get('id')
-    values = db.exec_query("UPDATE Room SET status='closed' WHERE 'id' = %s", [id_room])
+    values = db.exec_query("UPDATE Room  r SET r.status='closed' WHERE r.id = %s", [id_room])
     return "Updated state"
 
 @app.route('/statusRoom')
