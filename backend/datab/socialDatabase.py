@@ -1,5 +1,4 @@
-import MySQLdb
-import MySQLdb.connections
+import pymysql
 
 DB_HOST = 'localhost'
 DB_USER = 'socialuser'
@@ -8,7 +7,7 @@ DB_NAME = 'social_quiz'
 
 
 def get_connection():
-	return MySQLdb.connect(*[DB_HOST, DB_USER, DB_PASS, DB_NAME])
+	return pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASS, db=DB_NAME)
 
 
 def run_query(query=''):

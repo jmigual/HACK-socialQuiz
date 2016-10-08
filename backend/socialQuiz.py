@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask, send_from_directory
-from flask import request
 import json
-import backend.socialDatabase as db
+
+from flask import Flask
+from flask import request
+
+import datab.socialDatabase as db
 
 app = Flask(__name__)
 
@@ -58,17 +60,21 @@ def fill_room():
         questions = json_data["question"]
 
         for q in questions:
-            db.exec_query("INSERT INTO Question (roomId, question) VALUES (%s, %s)", room_id, q)
+            db.exec_query("INSERT INTO Question (roomId, question) VALUES (%s, %s)", [room_id, q])
 
         return "Data received"
 
 
 @app.route('/getRoomQuestion')
 def get_room_question():
-    idRoom = request.args.get('idRoom')
-    return json.dumps({"questions": [
-        {"id": 2113, "text": "How do you feel?"},
-        {"id": 2114, "text": "Do you want a kiss?"}]})
+    id_room = request.args.get('idRoom')
+    values = db.exec_query("SELECT id, question FROM Question WHERE roomId=%s", [id_room])
+
+    response = []
+    for val in values:
+        response.append({"id": val[0], "text": val[1]})
+
+    return json.dumps({"questions": response})
 
 
 @app.route('/postRoomAnswers')
