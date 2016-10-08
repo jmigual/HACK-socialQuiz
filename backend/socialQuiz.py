@@ -3,7 +3,7 @@
 from flask import Flask, send_from_directory
 from flask import request
 import json
-import backend.socialDatabase
+import backend.socialDatabase as db
 
 app = Flask(__name__)
 
@@ -19,7 +19,7 @@ def register():
     email = request.args.get('email')
     if email is None:
         return json.dumps({})
-    return register_or_get_email(email)
+    return db.register_or_get_email(email)
 
 
 @app.route('/joinRoom')
