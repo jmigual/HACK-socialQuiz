@@ -39,6 +39,11 @@ useful links:
   "question": ["What would you do?", "If everyone..."]
 }
 
+//Managing room
+/openRoom&id=idRoom
+
+/closeRoom&id=idRoom
+
 
 //Room questions
 
