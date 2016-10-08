@@ -87,7 +87,9 @@ def post_room_answers():
         values = []
         for a in json_data["answers"]:
             values.append((user_id, a["id"], a["text"]))
-        db.exec_many_query("INSERT INTO Answer (questionId, userId, answer), VALUES(?,?,?)", values)
+            print(values[len(values) - 1])
+        db.exec_many_query("INSERT INTO Answer (questionId, userId, answer) VALUES(%s,%s,%s)", values)
+        return "Data received"
 
 
 @app.route('/getQuizQuestion')
