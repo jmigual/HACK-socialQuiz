@@ -34,7 +34,8 @@ CREATE TABLE QuizQuestion
 	askedUserId INT REFERENCES Users(id),
 	aboutUserId INT REFERENCES Users(id),
 	roomId INT REFERENCES Room(id),
-	answerId INT REFERENCES Answer(id)
+	answerId INT REFERENCES Answer(id),
+	answeredId INT REFERENCES Answer(id)
 );
 
 CREATE TABLE QuizPossibleAnswer
