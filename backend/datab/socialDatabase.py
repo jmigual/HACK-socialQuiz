@@ -53,6 +53,7 @@ def exec_many_query(query, values):
 	cursor.close()
 	conn.close()
 
+
 def register_or_get_email(email):
 	# Create new connection/cursor
 	value = exec_query("SELECT id FROM Users WHERE email = %s", [email])

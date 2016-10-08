@@ -150,10 +150,18 @@ def get_question():
 def post_answer():
     quizQuestionId = request.args.get('quizQuestionId')
     answerId = request.args.get('answerId')
+
+    value = db.exec_query("SELECT qq.answerId, q.question, a.answer AS RightAnswer "
+                          "FROM QuizQuestion qq "
+                          "INNER JOIN Answer a ON (qq.answerId = a.id) "
+                          "INNER JOIN Question q ON (q.id = a.questionId) "
+                          "WHERE qq.id = %s", [quizQuestionId])
+    if value is None:
+        return "Internal server error"
     return json.dumps({
-          "correct": "false",
-          "question": "Whats your age?",
-          "correctAnswer": {"id": 34, "text": "Ans1"}
+          "correct": value[0] == answerId,
+          "question": value[1],
+          "correctAnswer": {"id": value[0], "text": value[2]}
         })
 
 if __name__ == '__main__':
