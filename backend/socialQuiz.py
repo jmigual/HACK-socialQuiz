@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import random
 
 from flask import Flask
 from flask import request
@@ -8,6 +9,8 @@ from flask import request
 import datab.socialDatabase as db
 
 app = Flask(__name__)
+
+random.seed(7)
 
 
 @app.route('/')
@@ -97,6 +100,23 @@ def post_room_answers():
 def get_question():
     idRoom = request.args.get('idRoom')
     idUser = request.args.get('idUser')
+    
+    possibleQuestions = db.getNonAnsweredQuestions(idRoom,idUser)
+    possibleUsersToAsk = db.getNonAnsweredPeople(idRoom,idUser)
+    
+    if len(possibleQuestions) > 0:
+        questionId = possibleQuestions[random.randrange(len(possibleQuestions))]
+    else :
+        possibleQuestions = db.getAllQuestions(idRoom,idUser)
+        questionId = possibleQuestions[random.randrange(len(possibleQuestions))]
+    if len(possibleUsersToAsk) > 0:
+        askedAboutId = possibleUsersToAsk[random.randrange(len(possibleUsersToAsk))]
+    else :
+        possibleUsersToAsk = db.getAllDiferentPeople(idRoom,idUser)
+        askedAboutId = possibleUsersToAsk[random.randrange(len(possibleUsersToAsk))]
+    
+    
+    
     return json.dumps({
           "id": 1234,
           "question": "Whats your age?",
