@@ -36,10 +36,10 @@ def join_room():
     idRoom = request.args.get('idRoom')
     email = request.args.get('email')
     id_user = db.register_or_get_email(email)
-    db.exec_query("INSERT INTO 	RoomMembers ('roomId', 'userId') VALUES (%d,%d)", [idRoom, id_user])
+    db.exec_query("INSERT INTO 	RoomMembers ('roomId', 'userId') VALUES (%s,%s)", [idRoom, id_user])
     return json.dumps({"id": id_user})
-
-
+    
+    
 @app.route('/getUserId')
 def get_user_id():
     email = request.args.get('email')
@@ -77,6 +77,19 @@ def fill_room():
 
         return "Data received"
 
+        
+        
+@app.route('/openRoom')
+def open_room():
+    id_room = request.args.get('id')
+    values = db.exec_query("UPDATE Room SET status='started' WHERE 'id' = %s", [id_room])
+    return "Updated state"
+
+@app.route('/closeRoom')
+def close_room():
+    id_room = request.args.get('id')
+    values = db.exec_query("UPDATE Room SET status='closed' WHERE 'id' = %s", [id_room])
+    return "Updated state"
 
 @app.route('/getRoomQuestion')
 def get_room_question():
@@ -153,8 +166,8 @@ def get_question():
         for (answerId,textId) in answers:
             answerJson.append({"id": answerId ,"text":textId})
             
-        #SELECT `question` FROM `Question` WHERE `id` = 3
-        value = exec_query("SELECT 'question' FROM 'Question' WHERE 'id' = %d", [quizQuestionId])
+        #SELECT 'question' FROM 'Question' WHERE 'id' = 3
+        value = exec_query("SELECT 'question' FROM 'Question' WHERE 'id' = %s", [quizQuestionId])
         question = value[0]
         
         return json.dumps({

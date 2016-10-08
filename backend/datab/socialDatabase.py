@@ -74,7 +74,7 @@ def getNonAnsweredQuestions(idRoom,idUser):
 #WHERE q.id = qq.questionId
 #AND qq.askedUserId = 2
     ret = []
-    value = exec_query("SELECT DISTINCT q.id FROM Question q WHERE q.roomId = %d AND NOT EXISTS ( SELECT qq.questionId FROM QuizQuestion qq WHERE q.id = qq.questionId AND qq.askedUserId = %d)", [idRoom, idUser])
+    value = exec_query("SELECT DISTINCT q.id FROM Question q WHERE q.roomId = %s AND NOT EXISTS ( SELECT qq.questionId FROM QuizQuestion qq WHERE q.id = qq.questionId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
     return ret
@@ -82,7 +82,7 @@ def getNonAnsweredQuestions(idRoom,idUser):
 def getNonAnsweredPeople(idRoom,idUser):
 #SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = 3 AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId =  2)
     ret = []
-    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %d AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %d)", [idRoom, idUser])
+    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
     return ret
@@ -90,26 +90,26 @@ def getNonAnsweredPeople(idRoom,idUser):
 def getAllQuestions(idRoom):
     #SELECT `id` FROM `question` WHERE `roomId` = roomId
     ret = []
-    value = exec_query("SELECT 'id' FROM 'question' WHERE 'roomId' = %d", [idRoom])
+    value = exec_query("SELECT 'id' FROM Question WHERE 'roomId' = %s", [idRoom])
     for row in value:
         ret.append(row[0])
     return ret
     
 def getAllDifferentPeople(idRoom,idUser):
     ret = []
-    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %d AND  rm.userId != %d)", [idRoom, idUser])
+    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND  rm.userId != %s", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
     return ret
     
 def insertQuizQuestion(idUser,askedAboutId,questionId):
-    value = exec_query("INSERT INTO 'QuizQuestion'( 'askedUserId', 'aboutUserId', 'questionId') VALUES (%d,%d,%d)", [idUser,askedAboutId,questionId])
+    value = exec_query("INSERT INTO QuizQuestion ( 'askedUserId', 'aboutUserId', 'questionId') VALUES (%s,%s,%s)", [idUser,askedAboutId,questionId])
     #SELECT `id` FROM `QuizQuestion` WHERE `askedUserId` = 3 AND `aboutUserId` = 4 and `questionId` = 5
-    value = exec_query("SELECT 'id' FROM 'QuizQuestion' WHERE 'askedUserId' = %d AND 'aboutUserId' = %d and 'questionId' = %d", [idUser,askedAboutId,questionId])
+    value = exec_query("SELECT 'id' FROM QuizQuestion WHERE 'askedUserId' = %s AND 'aboutUserId' = %s and 'questionId' = %s", [idUser,askedAboutId,questionId])
     return value[0]
     
 def getAnswer(questionId,userId):
-    value = exec_query("SELECT 'id','answer' FROM 'answer' WHERE 'questionId' = %d AND 'userId' = %d", [questionId,userId])
+    value = exec_query("SELECT 'id','answer' FROM Answer WHERE 'questionId' = %s AND 'userId' = %s", [questionId,userId])
     if len(value) != 1:
         return (404, "Answer not found")
     return (value[0][0],value[0][1])
