@@ -126,8 +126,8 @@ def get_question():
     
     answers = []
     (answerId,textId) = db.getAnswer(questionId,askedAboutId)
-    answers.append((answerId,textId))    
-    for i in range(numberOfAnswers-1) :
+    answers.append((answerId,textId))
+    for i in max( range(numberOfAnswers-1) , len(otherUsers) :
         (answerId,textId) = db.getAnswer(questionId,otherUsers[i])
         answers.append((answerId,textId))
     
@@ -138,10 +138,14 @@ def get_question():
     answerJson = []
     for (answerId,textId) in answers:
         answerJson.append({"id": answerId ,"text":textId})
+        
+    #SELECT `question` FROM `Question` WHERE `id` = 3
+    value = exec_query("SELECT 'question' FROM 'Question' WHERE 'id' = 3", [quizQuestionId])
+    question = value[0]
     
     return json.dumps({
           "id": quizQuestionId,
-          "question": "Whats your age?",
+          "question": question,
           "answers": answerJson
         })
 
