@@ -36,7 +36,7 @@ def join_room():
     idRoom = request.args.get('idRoom')
     email = request.args.get('email')
     id_user = db.register_or_get_email(email)
-    db.exec_query("INSERT INTO 	RoomMembers (roomId, userId) VALUES (%s,%s)", [idRoom, id_user])
+    db.exec_query("REPLACE INTO RoomMembers (roomId, userId) VALUES (%s,%s)", [idRoom, id_user])
     return json.dumps({"id": id_user})
     
 @app.route('/answeredRoom')
