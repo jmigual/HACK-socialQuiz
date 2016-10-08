@@ -1,4 +1,4 @@
-CREATE TABLE User
+CREATE TABLE Users
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	email TEXT
@@ -7,8 +7,10 @@ CREATE TABLE User
 CREATE TABLE Room
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	creator INT REFERENCES User(id),
-	timeLimit TIMESTAMP
+	creator INT NOT NULL REFERENCES User(id) ,
+	timeLimit TIMESTAMP,
+	questionLimit INT,
+	status ENUM('waiting', 'started', 'finished', 'closed')
 );
 
 CREATE TABLE Question
