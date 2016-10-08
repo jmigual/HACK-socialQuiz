@@ -32,6 +32,12 @@ useful links:
   "id" : 322
 }
 
+//Used by the admin to get its created rooms
+/getRooms?userId=12345678
+{
+  "rooms": [123, 124, 125]
+}
+
 //Used by the admin to fill the info about the room
 /fillRoom
 {
@@ -43,6 +49,8 @@ useful links:
 /openRoom&id=idRoom
 
 /closeRoom&id=idRoom
+
+
 
 
 //Room questions
