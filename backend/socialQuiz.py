@@ -36,7 +36,7 @@ def join_room():
     idRoom = request.args.get('idRoom')
     email = request.args.get('email')
     id_user = db.register_or_get_email(email)
-    db.exec_query("INSERT INTO 	RoomMembers ('roomId', 'userId') VALUES (%s,%s)", [idRoom, id_user])
+    db.exec_query("INSERT INTO 	RoomMembers (roomId, userId) VALUES (%s,%s)", [idRoom, id_user])
     return json.dumps({"id": id_user})
     
     
@@ -89,6 +89,12 @@ def open_room():
 def close_room():
     id_room = request.args.get('id')
     values = db.exec_query("UPDATE Room  r SET r.status='closed' WHERE r.id = %s", [id_room])
+    return "Updated state"
+    
+@app.route('/finishRoom')
+def finish_room():
+    id_room = request.args.get('id')
+    values = db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
     return "Updated state"
 
 @app.route('/statusRoom')

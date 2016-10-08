@@ -31,7 +31,6 @@ def exec_query(query, bind_values):
 	conn = get_connection()
 	cursor = conn.cursor()
 	cursor.execute(query, bind_values)
-
 	if query.upper().startswith('SELECT'):
 		data = cursor.fetchall()
 	elif query.upper().startswith('INSERT'):
