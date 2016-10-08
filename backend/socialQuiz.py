@@ -104,8 +104,10 @@ def finish_room():
     values = db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
     ranking = []
     #for
-    #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN 
-    return "Updated state"
+    #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
+    values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId")
+    #SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
+    return return json.dumps(values)
 
 @app.route('/statusRoom')
 def status_room():

@@ -11,7 +11,7 @@ CREATE TABLE Room
 	creator INT NOT NULL REFERENCES Users(id) ,
 	timeLimit TIMESTAMP,
 	questionLimit INT,
-	status ENUM('waiting', 'started', 'finished', 'closed')
+	status ENUM('waiting', 'started', 'finished', 'closed') DEFAULT 'waiting'
 );
 
 CREATE TABLE RoomMembers
