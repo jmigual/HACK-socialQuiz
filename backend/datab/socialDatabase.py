@@ -64,10 +64,28 @@ def register_or_get_email(email):
 	return value
 
 def getNonAnsweredQuestions(idRoom,idUser):
-    return [3,4,5,6]
+#SELECT DISTINCT q.id
+#FROM Question q
+#WHERE q.roomId =3
+#AND NOT 
+#EXISTS (
+#SELECT qq.questionId
+#FROM QuizQuestion qq
+#WHERE q.id = qq.questionId
+#AND qq.askedUserId = 2
+    ret = []
+    value = exec_query("SELECT DISTINCT q.id FROM Question q WHERE q.roomId = %d AND NOT EXISTS ( SELECT qq.questionId FROM QuizQuestion qq WHERE q.id = qq.questionId AND qq.askedUserId = %d)", [idRoom, idUser])
+    for row in value:
+        ret.append(row[0])
+    return ret
     
 def getNonAnsweredPeople(idRoom,idUser):
-    return [8,2]
+#SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = 3 AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId =  2)
+    ret = []
+    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %d AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %d)", [idRoom, idUser])
+    for row in value:
+        ret.append(row[0])
+    return ret
     
 def getAllQuestions(idRoom):
     #SELECT `id` FROM `question` WHERE `roomId` = roomId
@@ -78,11 +96,17 @@ def getAllQuestions(idRoom):
     return ret
     
 def getAllDifferentPeople(idRoom,idUser):
-    return [1,2,3,4,5,6,7]
+    ret = []
+    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %d AND  rm.userId != %d)", [idRoom, idUser])
+    for row in value:
+        ret.append(row[0])
+    return ret
     
-def insertQuizQuestion(idRoom,idUser,askedAboutId,questionId):
-    
-    return 3
+def insertQuizQuestion(idUser,askedAboutId,questionId):
+    value = exec_query("INSERT INTO 'QuizQuestion'( 'askedUserId', 'aboutUserId', 'questionId') VALUES (%d,%d,%d)", [idUser,askedAboutId,questionId])
+    #SELECT `id` FROM `QuizQuestion` WHERE `askedUserId` = 3 AND `aboutUserId` = 4 and `questionId` = 5
+    value = exec_query("SELECT 'id' FROM 'QuizQuestion' WHERE 'askedUserId' = %d AND 'aboutUserId' = %d and 'questionId' = %d", [idUser,askedAboutId,questionId])
+    return value[0]
     
 def getAnswer(questionId,userId):
     value = exec_query("SELECT 'id','answer' FROM 'answer' WHERE 'questionId' = %d AND 'userId' = %d", [questionId,userId])

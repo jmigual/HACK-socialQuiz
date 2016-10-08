@@ -1,7 +1,8 @@
 CREATE TABLE Users
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	email TEXT
+	email TEXT,
+    name TEXT
 );	
 
 CREATE TABLE Room
@@ -11,6 +12,14 @@ CREATE TABLE Room
 	timeLimit TIMESTAMP,
 	questionLimit INT,
 	status ENUM('waiting', 'started', 'finished', 'closed')
+);
+
+CREATE TABLE RoomMembers
+(
+
+	roomId INT REFERENCES Room(id),
+	userId INT REFERENCES Users(id),
+	PRIMARY KEY(roomId, userId)
 );
 
 CREATE TABLE Question
@@ -33,8 +42,8 @@ CREATE TABLE QuizQuestion
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	askedUserId INT REFERENCES Users(id),
 	aboutUserId INT REFERENCES Users(id),
-	roomId INT REFERENCES Room(id),
-	answerId INT REFERENCES Answer(id),
+	questionId INT REFERENCES Room(id),
+	correctanswerId INT REFERENCES Answer(id),
 	answeredId INT REFERENCES Answer(id)
 );
 
