@@ -13,27 +13,27 @@ useful links:
 //join
 
 // Returns the user id, it may be already in our database
-/joinroom&idroom=23&email=melape@lla.lo
+/joinRoom&idroom=23&email=melape@lla.lo
 {
   "id" : 12345678
 }
 
 //loggin
 //Used to loggin, user must be in our database
-/getuserid&email=canons@hola.com
+/getUserId&email=canons@hola.com
 {
   "id" : 12345678
 }
 
 //Creating a room
 //Used by the admin to create a room, it returns the room id
-/createroom&userid=12345678
+/createRoom&userid=12345678
 {
   "id" : 322
 }
 
 //Used by the admin to fill the info about the room
-/fillroom
+/fillRoom
 {
   "id":322,
   "question": ["What would you do?", "If everyone..."]
@@ -43,7 +43,7 @@ useful links:
 //Room questions
 
 //Returns the questions of a room
-/getroomquestion&idroom=idroom
+/getroomquestion&idroom=idRoom
 {
   "questions":
   [
