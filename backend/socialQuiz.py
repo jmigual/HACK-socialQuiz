@@ -17,9 +17,12 @@ def index():
 def register():
     # To obtain the mail
     email = request.args.get('email')
+    print(email)
     if email is None:
         return json.dumps({})
-    return db.register_or_get_email(email)
+
+    id_user = db.register_or_get_email(email)
+    return json.dumps({"id": id_user})
 
 
 @app.route('/joinRoom')
