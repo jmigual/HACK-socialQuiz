@@ -36,8 +36,7 @@ http://www.w3schools.com/jquery/jquery_ajax_intro.asp
 /fillroom
 {
   "id":322,
-  "question": ["What would you do?", "If everyone..."],
-  "mail": ["iwouldlike@yourtuuseme","someday@iwill.dontworry]
+  "question": ["What would you do?", "If everyone..."]
 }
 
 
