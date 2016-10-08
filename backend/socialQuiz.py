@@ -1,26 +1,15 @@
 # -*- coding: utf-8 -*-
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask import request
-from flaskext.mysql import MySQL
 import json
+import backend.socialDatabase
 
 app = Flask(__name__)
-
-mysql = MySQL()
-app.config['MYSQL_DATABASE_USER'] = "socialuser"
-app.config['MYSQL_DATABASE_PASSWORD'] = '12345678'
-app.config['MYSQL_DATABASE_DB'] = 'social_quiz'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-mysql.init_app(app)
-
-frontDir = "../frontend/"
 
 
 @app.route('/')
 def index():
-    path = frontDir + "index.html"
-    print(path)
     return "Hello world"
 
 
@@ -28,7 +17,9 @@ def index():
 def register():
     # To obtain the mail
     email = request.args.get('email')
-    return json.dumps({"id": 12345678})
+    if email is None:
+        return json.dumps({})
+    return register_or_get_email(email)
 
 
 @app.route('/joinRoom')
