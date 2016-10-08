@@ -52,7 +52,7 @@ useful links:
 
 /statusRoom&id=idRoom
 {
-  "status"="started"/"finished";
+  "status"="started"/"finished"
 }
 
 

@@ -91,6 +91,16 @@ def close_room():
     values = db.exec_query("UPDATE Room SET status='closed' WHERE 'id' = %s", [id_room])
     return "Updated state"
 
+@app.route('/statusRoom')
+def status_room():
+    id_room = request.args.get('id')
+    #SELECT status FROM Room WHERE id = 1
+    values = db.exec_query("SELECT status FROM Room WHERE id = %s", [id_room])
+    return json.dumps({
+          "status": values[0][0] 
+        })
+
+
 @app.route('/getRoomQuestion')
 def get_room_question():
     id_room = request.args.get('idRoom')
