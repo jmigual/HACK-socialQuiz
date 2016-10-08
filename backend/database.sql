@@ -7,7 +7,7 @@ CREATE TABLE Users
 CREATE TABLE Room
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	creator INT NOT NULL REFERENCES User(id) ,
+	creator INT NOT NULL REFERENCES Users(id) ,
 	timeLimit TIMESTAMP,
 	questionLimit INT,
 	status ENUM('waiting', 'started', 'finished', 'closed')
@@ -24,21 +24,22 @@ CREATE TABLE Answer
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	questionId INT REFERENCES Question(id),
-	userId INT REFERENCES User(id),
+	userId INT REFERENCES Users(id),
 	answer TEXT
 );
 
 CREATE TABLE QuizQuestion
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	userId INT REFERENCES User(id),
+	askedUserId INT REFERENCES Users(id),
+	aboutUserId INT REFERENCES Users(id),
 	roomId INT REFERENCES Room(id),
 	answerId INT REFERENCES Answer(id)
 );
 
 CREATE TABLE QuizPossibleAnswer
 (
-	quizId INT,
-	answerId INT,
+	quizId INT REFERENCES QuizQuestion(id),
+	answerId INT REFERENCES Answer(id),
 	PRIMARY KEY(quizId, answerId)
 );
