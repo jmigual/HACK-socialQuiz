@@ -81,12 +81,13 @@ def get_room_question():
 def post_room_answers():
     json_data = request.get_json()
     if json_data is None:
+        print("no json");
         return "Error: no JSON found"
     else:
         user_id = json_data["idUser"]
         values = []
         for a in json_data["answers"]:
-            values.append((user_id, a["id"], a["text"]))
+            values.append((a["id"], user_id, a["text"]))
             print(values[len(values) - 1])
         db.exec_many_query("INSERT INTO Answer (questionId, userId, answer) VALUES(%s,%s,%s)", values)
         return "Data received"

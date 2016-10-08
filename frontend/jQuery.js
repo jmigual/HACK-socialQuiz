@@ -6,6 +6,23 @@ function getUrlVars() {
 	return vars;
 }
 
+jQuery["postJSON"] = function( url, data, callback ) {
+    // shift arguments if data argument was omitted
+    if ( jQuery.isFunction( data ) ) {
+        callback = data;
+        data = undefined;
+    }
+
+    return jQuery.ajax({
+        url: url,
+        type: "POST",
+        contentType:"application/json; charset=utf-8",
+        dataType: "json",
+        data: data,
+        success: callback
+    });
+};
+
 var roomID = getUrlVars()["id"];
 var server = "http://localhost:5000";
 $(document).ready(function(){
@@ -40,13 +57,18 @@ function startQuestions(userID, roomID){
 function setQuestions(userID,roomID,questions,answers,i){
 	$("#answerInput").val("").focus();
 	if (i==questions.length){
-		$.post(server+"/postRoomAnswers",{
-			idRoom:roomID,
-			idUser:userID,
-			answers:answers
+		console.log(answers);
+		console.log(userID);
+		$.ajax({
+            url:server+"/postRoomAnswers",
+            data:JSON.stringify({
+				idRoom:roomID,
+				idUser:userID,
+				answers:answers
+			}),
+			contentType:"application/json; charset=utf-8",
+			type:"POST"
 		});
-		alert(answers[0].text);
-		alert(answers[1].text);
 	}
 	else{
 		$("#questionText").text(questions[i].text);
