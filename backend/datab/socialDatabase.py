@@ -45,6 +45,14 @@ def exec_query(query, bind_values):
 	return data
 
 
+def exec_many_query(query, values):
+	conn = get_connection()
+	cursor = conn.cursor()
+	cursor.executemany(query, values)
+	conn.commit()
+	cursor.close()
+	conn.close()
+
 def register_or_get_email(email):
 	# Create new connection/cursor
 	value = exec_query("SELECT id FROM Users WHERE email = %s", [email])

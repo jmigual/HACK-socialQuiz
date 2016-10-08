@@ -43,7 +43,7 @@ useful links:
 //Room questions
 
 //Returns the questions of a room
-/getroomquestion&idroom=idRoom
+/getRoomQuestion&idroom=idRoom
 {
   "questions":
   [
@@ -53,10 +53,10 @@ useful links:
 }
 
 //Used to save user room answers
-/postroomanswers
+/postRoomAnswers
 {
-  "idroom" :234,
-  "iduser" :23456,
+  "idRoom" :234,
+  "idUser" :23456,
   "answers":
   [
     {"id":2113, "text":"Great" }, 

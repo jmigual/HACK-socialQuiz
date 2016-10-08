@@ -52,7 +52,7 @@ def create_room():
 
 @app.route('/fillRoom', methods=['POST'])
 def fill_room():
-    json_data = request.get_json(force=True)
+    json_data = request.get_json()
     if json_data is None:
         return "Error: no JSON found"
     else:
@@ -77,9 +77,17 @@ def get_room_question():
     return json.dumps({"questions": response})
 
 
-@app.route('/postRoomAnswers')
+@app.route('/postRoomAnswers', methods=['POST'])
 def post_room_answers():
-    print(request.form())
+    json_data = request.get_json()
+    if json_data is None:
+        return "Error: no JSON found"
+    else:
+        user_id = json_data["idUser"]
+        values = []
+        for a in json_data["answers"]:
+            values.append((user_id, a["id"], a["text"]))
+        db.exec_many_query("INSERT INTO Answer (questionId, userId, answer), VALUES(?,?,?)", values)
 
 
 @app.route('/getQuizQuestion')
