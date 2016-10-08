@@ -9,6 +9,7 @@ from flask import request
 import datab.socialDatabase as db
 
 app = Flask(__name__)
+numberOfAnswers = 4
 
 random.seed(7)
 
@@ -105,22 +106,43 @@ def get_question():
     possibleUsersToAsk = db.getNonAnsweredPeople(idRoom,idUser)
     
     if len(possibleQuestions) > 0:
-        questionId = possibleQuestions[random.randrange(len(possibleQuestions))]
+        questionId = random.sample(possibleQuestions,1)
     else :
         possibleQuestions = db.getAllQuestions(idRoom,idUser)
-        questionId = possibleQuestions[random.randrange(len(possibleQuestions))]
+        questionId = random.sample(possibleQuestions,1)
     if len(possibleUsersToAsk) > 0:
-        askedAboutId = possibleUsersToAsk[random.randrange(len(possibleUsersToAsk))]
+        askedAboutId = random.sample(possibleUsersToAsk,1)
     else :
-        possibleUsersToAsk = db.getAllDiferentPeople(idRoom,idUser)
-        askedAboutId = possibleUsersToAsk[random.randrange(len(possibleUsersToAsk))]
+        possibleUsersToAsk = db.getAllDifferentPeople(idRoom,idUser)
+        askedAboutId = random.sample(possibleUsersToAsk,1)
     
     
+    quizQuestionId = db.insertQuizQuestion(idRoom,idUser,askedAboutId,questionId)
+    
+    otherUsers = db.getAllDifferentPeople(idRoom,askedAboutId)
+    
+    random.shuffle(otherUsers)
+    
+    
+    answers = []
+    (answerId,textId) = db.getAnswer(questionId,askedAboutId)
+    answers.append((answerId,textId))    
+    for i in range(numberOfAnswers-1) :
+        (answerId,textId) = db.getAnswer(questionId,otherUsers[i])
+        answers.append((answerId,textId))
+    
+    #if commented the first answer will be the correct one
+    #random.shuffle(answers)
+    
+    
+    answerJson = []
+    for (answerId,textId) in answers:
+        answerJson.append({"id": answerId ,"text":textId})
     
     return json.dumps({
-          "id": 1234,
+          "id": quizQuestionId,
           "question": "Whats your age?",
-          "answers": [{"id": 34,"text":"Ans1"}, {"id": 35, "text": "Ans2"}]
+          "answers": answerJson
         })
 
 

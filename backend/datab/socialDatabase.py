@@ -62,3 +62,20 @@ def register_or_get_email(email):
 		value = value[0][0]
 	return value
 
+def getNonAnsweredQuestions(idRoom,idUser):
+    return [3,4,5,6]
+    
+def getNonAnsweredPeople(idRoom,idUser):
+    return [8,2]
+    
+def getAllQuestions(idRoom,idUser):
+    return [1,2,3,4]
+    
+def getAllDifferentPeople(idRoom,idUser):
+    return [1,2,3,4,5,6,7]
+    
+def insertQuizQuestion(idRoom,idUser,askedAboutId,questionId):
+    return 3
+    
+def getAnswer(questionId,askedAboutId):
+    return (4,"melapela")
