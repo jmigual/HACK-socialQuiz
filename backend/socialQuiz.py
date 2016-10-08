@@ -48,9 +48,19 @@ def create_room():
     return json.dumps({"id": room_id})
 
 
-@app.route('/fillRoom')
+@app.route('/fillRoom', methods=['POST'])
 def fill_room():
-    print(request.form())
+    json_data = request.get_json(force=True)
+    if json_data is None:
+        return "Error: no JSON found"
+    else:
+        room_id = json_data["id"]
+        questions = json_data["question"]
+
+        for q in questions:
+            db.exec_query("INSERT INTO Question (roomId, question) VALUES (%s, %s)", room_id, q)
+
+        return "Data received"
 
 
 @app.route('/getRoomQuestion')
