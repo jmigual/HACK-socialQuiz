@@ -56,6 +56,26 @@ def post_room_answers():
     print(request.form())
 
 
+@app.route('/getQuizQuestion')
+def get_question():
+    idRoom = request.args.get('idRoom')
+    idUser = request.args.get('idUser')
+    return json.dumps({
+          "id": 1234,
+          "question": "Whats your age?",
+          "answers": [{"id": 34,"text":"Ans1"}, {"id": 35, "text": "Ans2"}]
+        })
+
+
+@app.route('/postAnswer')
+def post_answer():
+    quizQuestionId = request.args.get('quizQuestionId')
+    answerId = request.args.get('answerId')
+    return json.dumps({
+          "correct": "false",
+          "question": "Whats your age?",
+          "correctAnswer": {"id": 34, "text": "Ans1"}
+        })
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1')

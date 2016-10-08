@@ -67,14 +67,14 @@ useful links:
 
 //Quizz questions
 //Get's a quizz question for a user
-/getquestion&idroom=idroom&iduser=iduser
+/getQuizQuestion&idRoom=idRoom&idUser=idUser
 {
   "id": 1234,
   "question": "Whats your age?",
-  "answers": [{"id": 34,"text":"Ans1"}]
+  "answers": [{"id": 34,"text":"Ans1"}, {"id": 35, "text": "Ans2"}]
 }
 //Sends the answer to a question of the quizz
-/postanswer&quizquestionid=23&answerid=24
+/postAnswer&quizQuestionId=23&answerId=24
 {
   "correct": false,
   "question": "Whats your age?",
