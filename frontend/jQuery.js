@@ -9,12 +9,24 @@ function getUrlVars() {
 
 var server = "http://localhost:5000";
 var server2 = "http:interact.siliconpeople.net"
+
+urlVars=getUrlVars();
+if ("id" in urlVars){
+	var roomID = urlVars["id"];
+	$.get(server+"/statusRoom?id="+roomID,function(data){
+		serverRepply=JSON.parse(data);
+		if (serverRepply.status != "started" && serverRepply.status!= "waiting"){
+			$("#emailContainer").fadeOut();
+			$("#errorContainer").fadeIn();
+		}
+	});
+}
+
 $(document).ready(function(){
 	$("#emailInput").focus();
 	$(document).keypress(function(e){
 		if (e.which == 13){
 			var email = $("#emailInput").val();
-			console.log('hi');
 			$.get(server + "/getUserId?email="+email,function(data){
 
 				serverRepply=JSON.parse(data);
@@ -27,11 +39,21 @@ $(document).ready(function(){
 });
 
 function endEmail(userID,email){
+	$("#emailContainer").fadeOut();
 	urlVars=getUrlVars();
 	if ("id" in urlVars){
 		var roomID = urlVars["id"];
 		$.get(server + "/joinRoom?idRoom="+roomID+"&email="+email);
-		startQuestions(userID,roomID)
+		$.get(server+"/statusRoom?id="+roomID,function(data){
+			serverRepply=JSON.parse(data);
+			if (serverRepply.status== "waiting"){
+				startQuestions(userID,roomID)
+			}
+			else{
+				$("#quizQuestionContainer").fadeIn();
+				startQuiz(userID,roomID)
+			}
+		});
 	}
 	else{
 		startAdmin(userID);
@@ -39,8 +61,6 @@ function endEmail(userID,email){
 }
 
 function startQuestions(userID, roomID){
-	$("#emailContainer").fadeOut();
-
 	var questions;
 
 	$("#questionContainer").fadeIn();
@@ -67,8 +87,7 @@ function setQuestions(userID,roomID,questions,answers,i){
 			type:"POST"
 		});
 		$("#questionContainer").fadeOut();
-		$("#quizQuestionContainer").fadeIn();
-		startQuiz(userID,roomID);
+		$("#thanksContainer").fadeIn();
 	}
 	else{
 		$("#questionText").text(questions[i].text);
@@ -86,38 +105,60 @@ function setQuestions(userID,roomID,questions,answers,i){
 }
 
 function startAdmin(userID){
-	$("#emailContainer").fadeOut();
 	$("#adminContainer").fadeIn();
 	$("#newRoom").click(function(){newRoom(userID)});
+	$("#checkboxContainer").empty();
 
-	var preToggle="<div class=\"checkbox\"><label><input type=\"checkbox\" data-toggle=\"toggle\" id=\"";
-	var midToggle="\">";
-	var postToggle="</label></div>";
+	var part1="<p style=\"display: inline; color: white\">Room #<b>";//ID
+	var part2="</b> status: ";//status
+	var part3="</p>"
+	var part35="\n<button type=\"button\" class=\"btn btn-default\" id=\"";//ID
+	var part4="\">";//buttonText
+	var part5="</button><br>";
 
 	$.get(server+"/getRooms?userId="+userID,function(data){
 		serverRepply=JSON.parse(data);
 		var rooms= serverRepply.rooms;
 		for (var i=0; i<rooms.length; i++){
 			var r=rooms[i];
-			$("#checkboxContainer").append(preToggle+r+midToggle+r+postToggle);
 
 			$.get(server+"/statusRoom?id="+r,function(data){
 				serverRepply=JSON.parse(data);
-				var open='off';
+				var status=serverRepply.status;
+				if (status=="waiting"){
+					next="started";
+					$("#checkboxContainer").append(part1+r+part2+status+part3+part35+r+part4+"START");
+					$("#"+r).click(function(){
+						$.get(server+"/openRoom?id="+r,function(){
+							startAdmin(userID);
+						});
+					})
+				}
+				else if (status=="started"){
+					next="finished";
+					$("#checkboxContainer").append(part1+r+part2+status+part3+part35+r+part4+"FINISH");
+					$("#"+r).click(function(){
+						$.get(server+"/finishRoom?id="+r,function(){
+							startAdmin(userID);
+						});
+					})
+				}
+				else if (status=="finished"){
+					$("#checkboxContainer").append(part1+r+part2+status+part3);
+				}
+				/*var open='off';
 				if (serverRepply.status == "started") open='on';
 				$("#"+r).bootstrapToggle({
 					on: 'Open',
 					off: 'Closed'
 				}).bootstrapToggle(open).change(function(){
 					if($(this).prop('checked')){
-						console.log(server+"/openRoom?id="+r);
 						$.get(server+"/openRoom?id="+r,function(data){});
 					}
 					else{
-						console.log(server+"/closeRoom?id="+r);
 						$.get(server+"/closeRoom?id="+r,function(data){});
 					}
-				});
+				});*/
 			});
 		}
 	});

@@ -102,9 +102,10 @@ def getAllDifferentPeople(idRoom,idUser):
     return ret
     
 def insertQuizQuestion(idUser,askedAboutId,questionId):
-    value = exec_query("INSERT INTO QuizQuestion ( 'askedUserId', 'aboutUserId', 'questionId') VALUES (%s,%s,%s)", [idUser,askedAboutId,questionId])
+    value = exec_query("INSERT INTO QuizQuestion ( askedUserId, aboutUserId, questionId) VALUES (%s,%s,%s)", [idUser,askedAboutId,questionId])
     #SELECT `id` FROM `QuizQuestion` WHERE `askedUserId` = 3 AND `aboutUserId` = 4 and `questionId` = 5
-    value = exec_query("SELECT 'id' FROM QuizQuestion WHERE 'askedUserId' = %s AND 'aboutUserId' = %s and 'questionId' = %s", [idUser,askedAboutId,questionId])
+    value = exec_query("SELECT id FROM QuizQuestion WHERE askedUserId = %s AND aboutUserId = %s and questionId = %s", [idUser,askedAboutId,questionId])
+    print(value);
     return value[0]
     
 def getAnswer(questionId,userId):

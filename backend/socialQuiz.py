@@ -169,8 +169,9 @@ def get_question():
         if len(possibleQuestions) > 0:
             askedAboutId = random.sample(possibleUsersToAsk,1)
     
-    if questionId > 0 and askedAboutId > 0 :
-        quizQuestionId = db.insertQuizQuestion(idRoom,idUser,askedAboutId,questionId)
+    print(questionId);
+    if 0 < questionId and 0 < askedAboutId :
+        quizQuestionId = db.insertQuizQuestion(idUser,askedAboutId,questionId)
         
         otherUsers = db.getAllDifferentPeople(idRoom,askedAboutId)
         
@@ -180,7 +181,7 @@ def get_question():
         answers = []
         (answerId,textId) = db.getAnswer(questionId,askedAboutId)
         answers.append((answerId,textId))
-        for i in max( range(numberOfAnswers-1) , len(otherUsers) ):
+        for i in range( max(numberOfAnswers-1) , len(otherUsers) ):
             (answerId,textId) = db.getAnswer(questionId,otherUsers[i])
             answers.append((answerId,textId))
         
