@@ -199,6 +199,7 @@ def get_question():
         answerJson = []
         for (answerId,textId) in answers:
             answerJson.append({"id": answerId ,"text":textId})
+
         print (quizQuestionId);
         #SELECT 'question' FROM 'Question' WHERE 'id' = 3
         value = db.exec_query("SELECT id "
@@ -206,10 +207,25 @@ def get_question():
                               "WHERE askedUserId=%s AND aboutUserId=%s AND questionId=%s",
                               [idUser, askedAboutId[0], questionId[0]])
         quizQuestionId = value[0]
+
+        value = db.exec_query("SELECT q.question "
+                              "FROM Question q "
+                              "WHERE q.id = %s",
+                              [questionId[0]])
+
+        question_text = value[0][0]
+
+        value = db.exec_query("SELECT u.email "
+                              "FROM Users u "
+                              "WHERE u.id=%s",
+                              [askedAboutId[0]])
+        user_name = value[0][0]
+
+        question_text = "What did " + user_name + " answer about " + question_text + " ?"
         
         return json.dumps({
               "id": quizQuestionId,
-              "question": questionId[0],
+              "question": question_text,
               "answers": answerJson
             })
     else:
@@ -221,18 +237,29 @@ def post_answer():
     quizQuestionId = request.args.get('quizQuestionId')
     answerId = request.args.get('answerId')
 
-    value = db.exec_query("SELECT qq.answerId , q.correctanswerId, q.question  FROM QuizQuestion qq WHERE qq.id = %s", [quizQuestionId])
+    db.exec_query("UPDATE QuizQuestion SET answeredId=%s WHERE id = %s", [answerId ,quizQuestionId])
+
+
+    value = db.exec_query("SELECT qq.answeredId , qq.correctanswerId, qq.questionId  FROM QuizQuestion qq WHERE qq.id = %s", [quizQuestionId])
+
+    answeredId = value[0][0]
+    correctanswerId = value[0][1]
+    questionId = value[0][2]
+
+    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s " , [quizQuestionId])
+
+    text = value[0][0]
+
 
 
     #update UPDATE quizquestion SET answeredId=5 WHERE id = 1
-    db.exec_query("UPDATE quizquestion SET answeredId=%s WHERE id = %s", [quizQuestionId,quizQuestionId])
 
     if value is None:
         return json.dumps({"error": "Internal server error"})
     return json.dumps({
-          "correct": value[0] == answerId,
-          "question": value[1],
-          "correctAnswer": {"id": value[0], "text": value[2]}
+          "correct": answeredId == correctanswerId,
+          "question": questionId,
+          "correctAnswer": {"id": answeredId, "text": text}
         })
 
 if __name__ == '__main__':
