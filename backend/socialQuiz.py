@@ -196,7 +196,7 @@ def get_question():
                 answers.append((answerId,textId))
         
         #if commented the first answer will be the correct one
-        #random.shuffle(answers)
+        random.shuffle(answers)
         
         
         answerJson = []

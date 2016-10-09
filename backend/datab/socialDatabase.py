@@ -76,19 +76,19 @@ def getNonAnsweredQuestions(idRoom,idUser):
     value = exec_query("SELECT DISTINCT q.id FROM Question q WHERE q.roomId = %s AND NOT EXISTS ( SELECT qq.questionId FROM QuizQuestion qq WHERE q.id = qq.questionId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
-    print("getNonAnsweredQuestions");
-    print(ret);
+#    print("getNonAnsweredQuestions");
+#    print(ret);
     return ret
 
 
 def getNonAnsweredPeople(idRoom,idUser):
 # SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = 3 AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId =  2)
     ret = []
-    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %s)", [idRoom, idUser])
+    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND rm.userId <> %s AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %s)", [idRoom, idUser , idUser])
     for row in value:
         ret.append(row[0])
-    print("getNonAnsweredPeople");
-    print(ret);
+#    print("getNonAnsweredPeople");
+#    print(ret);
     return ret
 
 
@@ -99,18 +99,18 @@ def getAllQuestions(idRoom):
     for row in value:
         ret.append(row[0])
 
-    print("getAllDifferentPeople");
-    print(ret);
+#    print("getAllDifferentPeople");
+#    print(ret);
     return ret
 
 
 def getAllDifferentPeople(idRoom,idUser):
     ret = []
-    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND  rm.userId != %s", [idRoom, idUser])
+    value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND  rm.userId <> %s", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
-    print("getAllDifferentPeople");
-    print(ret);
+#    print("getAllDifferentPeople");
+#    print(ret);
     return ret
 
 
