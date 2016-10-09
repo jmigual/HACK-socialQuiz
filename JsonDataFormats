@@ -55,6 +55,11 @@ useful links:
 
 /closeRoom&id=idRoom
 
+/finishRoom&id=idRoom
+{
+    [{"email": "hola@iñi", "correct": 23}]
+}
+
 /statusRoom&id=idRoom
 {
   "status"="started"/"finished"

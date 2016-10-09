@@ -111,7 +111,9 @@ def finish_room():
                            "WHERE qq.correctanswerId = qq.answeredId "
                            "GROUP BY qq.id", [])
     # SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
-    return json.dumps(values)
+    return json.dumps({
+        [{"email": "hola@iñi", "correct": 23}]
+    })
 
 
 @app.route('/statusRoom')
