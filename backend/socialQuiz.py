@@ -32,6 +32,11 @@ def get_file(filename):  # pragma: no cover
         return str(exc)
 
 
+@app.route('/')
+def ind():
+    return index("index2.html")
+
+
 @app.route('/<path:filename>')
 def index(filename):
     return send_from_directory(os.path.join(root_dir(), 'static'), filename)
