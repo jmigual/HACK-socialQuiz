@@ -53,6 +53,15 @@ def create_room():
     room_id = db.exec_query("INSERT INTO Room (creator) VALUES (%s)", [user_id])
     return json.dumps({"id": room_id})
 
+@app.route('/getRooms')
+def get_rooms():
+    user_id = request.args.get('userId');
+    values = db.exec_query("SELECT id FROM Room WHERE creator=%s",[user_id]);
+    response=[];
+    for val in values:
+        response.append(val[0]);
+    return json.dumps({"rooms": response})
+
 
 @app.route('/fillRoom', methods=['POST'])
 def fill_room():
