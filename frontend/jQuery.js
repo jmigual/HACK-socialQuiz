@@ -104,16 +104,18 @@ function startAdmin(userID){
 			$.get(server+"/statusRoom?id="+r,function(data){
 				serverRepply=JSON.parse(data);
 				var open='off';
-				if (data.status=="started") open='on';	
+				if (serverRepply.status == "started") open='on';
 				$("#"+r).bootstrapToggle({
 					on: 'Open',
 					off: 'Closed'
 				}).bootstrapToggle(open).change(function(){
 					if($(this).prop('checked')){
-						$.get(server+"/openRoom?id="+r);
+						console.log(server+"/openRoom?id="+r);
+						$.get(server+"/openRoom?id="+r,function(data){});
 					}
 					else{
-						$.get(server+"/closeRoom?id="+r);
+						console.log(server+"/closeRoom?id="+r);
+						$.get(server+"/closeRoom?id="+r,function(data){});
 					}
 				});
 			});
