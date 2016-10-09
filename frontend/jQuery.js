@@ -7,8 +7,8 @@ function getUrlVars() {
 }
 
 
-//var server = "http://interact.siliconpeople.net:5000"
-var server = "http://localhost:5000";
+var server = "http://interact.siliconpeople.net:5000"
+//var server = "http://localhost:5000";
 
 var urlVars=getUrlVars();
 var hasError = false;
