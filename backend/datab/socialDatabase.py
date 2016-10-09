@@ -116,14 +116,17 @@ def insertQuizQuestion(idUser,askedAboutId,questionId):
     value = exec_query("SELECT id FROM QuizQuestion WHERE askedUserId = %s AND aboutUserId = %s and questionId = %s", [idUser,askedAboutId,questionId])
     print(value);
     return value[0]
+
     
 def getAnswer(questionId,userId):
-    print ("getAnswer");
-    print (questionId);
-    print(userId);
-    value = exec_query("SELECT id, answer FROM answer WHERE questionId = %s AND userId = %s", [questionId,userId])
-    print ("getAnswer");
-    print (value);
+    print("getAnswer")
+    print(questionId)
+    print(userId)
+    value = exec_query("SELECT a.id, a.answer "
+                       "FROM Answer a "
+                       "WHERE a.questionId = %s AND a.userId = %s", [questionId, userId])
+    print("getAnswer")
+    print(value)
     if len(value) != 1:
         return (404, "Answer not found")
-    return (value[0][0],value[0][1])
+    return (value[0][0], value[0][1])
