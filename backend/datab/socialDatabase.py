@@ -76,6 +76,8 @@ def getNonAnsweredQuestions(idRoom,idUser):
     value = exec_query("SELECT DISTINCT q.id FROM Question q WHERE q.roomId = %s AND NOT EXISTS ( SELECT qq.questionId FROM QuizQuestion qq WHERE q.id = qq.questionId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
+    print ("getNonAnsweredQuestions");
+    print (ret);
     return ret
     
 def getNonAnsweredPeople(idRoom,idUser):
@@ -84,6 +86,8 @@ def getNonAnsweredPeople(idRoom,idUser):
     value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
+    print ("getNonAnsweredPeople");
+    print (ret);
     return ret
     
 def getAllQuestions(idRoom):
@@ -92,6 +96,9 @@ def getAllQuestions(idRoom):
     value = exec_query("SELECT 'id' FROM Question WHERE 'roomId' = %s", [idRoom])
     for row in value:
         ret.append(row[0])
+
+    print ("getAllDifferentPeople");
+    print (ret);
     return ret
     
 def getAllDifferentPeople(idRoom,idUser):
@@ -99,6 +106,8 @@ def getAllDifferentPeople(idRoom,idUser):
     value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND  rm.userId != %s", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
+    print ("getAllDifferentPeople");
+    print (ret);
     return ret
     
 def insertQuizQuestion(idUser,askedAboutId,questionId):
@@ -109,7 +118,12 @@ def insertQuizQuestion(idUser,askedAboutId,questionId):
     return value[0]
     
 def getAnswer(questionId,userId):
-    value = exec_query("SELECT 'id','answer' FROM Answer WHERE 'questionId' = %s AND 'userId' = %s", [questionId,userId])
+    print ("getAnswer");
+    print (questionId);
+    print(userId);
+    value = exec_query("SELECT id, answer FROM answer WHERE questionId = %s AND userId = %s", [questionId,userId])
+    print ("getAnswer");
+    print (value);
     if len(value) != 1:
         return (404, "Answer not found")
     return (value[0][0],value[0][1])

@@ -212,8 +212,8 @@ function startQuiz(userID, roomID){
 	var buttonPre="<button type=\"button\" style=\"width: 100%\" class=\"btn btn-default\" id=\"";
 	var buttonMid="\">";
 	var buttonPost="</button>";
-
 	$.get(server+"/getQuizQuestion?idRoom="+roomID+"&idUser="+userID,function(data){
+	console.log(data);
 		serverRepply=JSON.parse(data);
 		quizQuestionID=serverRepply.id;
 		quizQuestionText=serverRepply.question;

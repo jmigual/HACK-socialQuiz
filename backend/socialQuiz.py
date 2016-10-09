@@ -107,7 +107,7 @@ def finish_room():
     #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
     values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId")
     #SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
-    return return json.dumps(values)
+    return json.dumps(values)
 
 @app.route('/statusRoom')
 def status_room():
@@ -155,8 +155,8 @@ def get_question():
     possibleQuestions = db.getNonAnsweredQuestions(idRoom,idUser)
     possibleUsersToAsk = db.getNonAnsweredPeople(idRoom,idUser)
     
-    questionId = -1
-    askedAboutId = -1
+    questionId = []
+    askedAboutId = []
     
     if len(possibleQuestions) > 0:
         questionId = random.sample(possibleQuestions,1)
@@ -171,21 +171,22 @@ def get_question():
         if len(possibleQuestions) > 0:
             askedAboutId = random.sample(possibleUsersToAsk,1)
     
-    print(questionId);
-    if 0 < questionId and 0 < askedAboutId :
-        quizQuestionId = db.insertQuizQuestion(idUser,askedAboutId,questionId)
+
+    if  len(questionId) > 0  and 0 < len(askedAboutId) :
+        quizQuestionId = db.insertQuizQuestion(idUser,askedAboutId[0],questionId[0])
         
-        otherUsers = db.getAllDifferentPeople(idRoom,askedAboutId)
+        otherUsers = db.getAllDifferentPeople(idRoom,askedAboutId[0])
         
         random.shuffle(otherUsers)
         
         
         answers = []
-        (answerId,textId) = db.getAnswer(questionId,askedAboutId)
+        (answerId,textId) = db.getAnswer(questionId[0],askedAboutId[0])
         answers.append((answerId,textId))
-        for i in range( max(numberOfAnswers-1) , len(otherUsers) ):
-            (answerId,textId) = db.getAnswer(questionId,otherUsers[i])
-            answers.append((answerId,textId))
+        if min(numberOfAnswers-1 , len(otherUsers)) > 0:
+            for i in range( min(numberOfAnswers-1 , len(otherUsers) )):
+                (answerId,textId) = db.getAnswer(questionId[0],otherUsers[i])
+                answers.append((answerId,textId))
         
         #if commented the first answer will be the correct one
         #random.shuffle(answers)
@@ -194,9 +195,9 @@ def get_question():
         answerJson = []
         for (answerId,textId) in answers:
             answerJson.append({"id": answerId ,"text":textId})
-            
+        print (quizQuestionId);
         #SELECT 'question' FROM 'Question' WHERE 'id' = 3
-        value = exec_query("SELECT 'question' FROM 'Question' WHERE 'id' = %s", [quizQuestionId])
+        value = db.exec_query("SELECT question FROM Question WHERE id = %s", [quizQuestionId[0]])
         question = value[0]
         
         return json.dumps({
@@ -205,7 +206,7 @@ def get_question():
               "answers": answerJson
             })
     else:
-        return "Not info found in  DB"
+        return "Not avaible questions for this user in this room"
 
 
 @app.route('/postAnswer')
