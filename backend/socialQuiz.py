@@ -105,7 +105,7 @@ def finish_room():
     ranking = []
     #for
     #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
-    values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId")
+    values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId",[])
     #SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
     return json.dumps(values)
 
@@ -197,12 +197,12 @@ def get_question():
             answerJson.append({"id": answerId ,"text":textId})
         print (quizQuestionId);
         #SELECT 'question' FROM 'Question' WHERE 'id' = 3
-        value = db.exec_query("SELECT question FROM Question WHERE id = %s", [quizQuestionId[0]])
-        question = value[0]
+        value = db.exec_query("SELECT id FROM quizquestion WHERE askedUserId=%s AND aboutUserId=%s AND questionId=%s", [idUser,askedAboutId[0],questionId[0]])
+        quizQuestionId = value[0]
         
         return json.dumps({
               "id": quizQuestionId,
-              "question": question,
+              "question": questionId[0],
               "answers": answerJson
             })
     else:
@@ -214,11 +214,15 @@ def post_answer():
     quizQuestionId = request.args.get('quizQuestionId')
     answerId = request.args.get('answerId')
 
-    value = db.exec_query("SELECT qq.answerId, q.question, a.answer AS RightAnswer "
-                          "FROM QuizQuestion qq "
-                          "INNER JOIN Answer a ON (qq.answerId = a.id) "
-                          "INNER JOIN Question q ON (q.id = a.questionId) "
-                          "WHERE qq.id = %s", [quizQuestionId])
+    value = db.exec_query("SELECT qq.answerId , q.correctanswerId, q.question  FROM QuizQuestion qq WHERE qq.id = %s", [quizQuestionId])
+
+
+    #update UPDATE quizquestion SET answeredId=5 WHERE id = 1
+    db.exec_query("UPDATE quizquestion SET answeredId=%s WHERE id = %s", [quizQuestionId,quizQuestionId])
+
+
+
+
     if value is None:
         return "Internal server error"
     return json.dumps({
