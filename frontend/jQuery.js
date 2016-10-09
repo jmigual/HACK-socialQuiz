@@ -136,18 +136,30 @@ function startAdmin(userID){
 			else if (r.status == "started") text = "FINISH";
 			else if (r.status == "finished") text = "FINISHED";
 			var par = document.createElement("p");
-			$(par).css("display: inline; color: white");
-			$(par).html(`Room #<b>${r.id}</b>${text}`);
+			$(par).html(`Room #<b>${r.id}</b> status: ${r.status}`);
+			$(par).css({"display": "inline", "color": "white"});
 
-			var button = document.createElement("button");
-            $(button).attr("type", "button");
-            $(button).addClass("btn btn-default");
-            $(button).attr('id', "RoomButton" + r.id);
-            $(button).attr('dbid', r.id);
-            $(button).attr('status', r.status);
-            $(button).html(text);
+			var button = '';
+			if(r.status != 'finished'){
+				button = document.createElement("button");
+	            $(button).attr("type", "button");
+	            $(button).addClass("btn btn-default");
+	            $(button).attr('id', "RoomButton" + r.id);
+	            $(button).attr('dbid', r.id);
+	            $(button).attr('status', r.status);
+	            $(button).html(text);
+        	}
 
-			$("#checkboxContainer").append(par, button);
+/*
+    var part1="<p style=\"display: inline; color: white\">Room #<b>";//ID
+    var part2="</b> status: ";//status
+    var part3="</p>"
+    var part35="\n<button type=\"button\" class=\"btn btn-default\" id=\"";//ID
+    var part4="\">";//buttonText
+    var part5="</button><br>";
+
+*/
+			$("#checkboxContainer").append(par, button,'<br>');
 			$(button).click(function(){
 				var id = $(this).attr("dbid");
                 var status = $(this).attr('status');
@@ -247,7 +259,7 @@ function startQuiz(userID, roomID){
 
 function answerQuiz(questionID,answerID,userID,roomID){
 	$("#quizAnswerColumn").empty();
-	$.get(server+"/postAnswer?quizQuestionId="+questionID+"&answerID="+answerID,function(data){
+	$.get(server+"/postAnswer?quizQuestionId="+questionID+"&answerId="+answerID,function(data){
 		serverRepply=JSON.parse(data);
 		if (serverRepply.correct=="true"){
 			alert("Correct answer");
