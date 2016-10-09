@@ -76,20 +76,22 @@ def getNonAnsweredQuestions(idRoom,idUser):
     value = exec_query("SELECT DISTINCT q.id FROM Question q WHERE q.roomId = %s AND NOT EXISTS ( SELECT qq.questionId FROM QuizQuestion qq WHERE q.id = qq.questionId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
-    print ("getNonAnsweredQuestions");
-    print (ret);
+    print("getNonAnsweredQuestions");
+    print(ret);
     return ret
-    
+
+
 def getNonAnsweredPeople(idRoom,idUser):
-#SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = 3 AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId =  2)
+# SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = 3 AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId =  2)
     ret = []
     value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND NOT EXISTS ( SELECT qq.aboutUserId FROM QuizQuestion qq WHERE rm.userId = qq.aboutUserId AND qq.askedUserId = %s)", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
-    print ("getNonAnsweredPeople");
-    print (ret);
+    print("getNonAnsweredPeople");
+    print(ret);
     return ret
-    
+
+
 def getAllQuestions(idRoom):
     #SELECT `id` FROM `question` WHERE `roomId` = roomId
     ret = []
@@ -97,22 +99,24 @@ def getAllQuestions(idRoom):
     for row in value:
         ret.append(row[0])
 
-    print ("getAllDifferentPeople");
-    print (ret);
+    print("getAllDifferentPeople");
+    print(ret);
     return ret
-    
+
+
 def getAllDifferentPeople(idRoom,idUser):
     ret = []
     value = exec_query("SELECT DISTINCT rm.userId FROM RoomMembers rm WHERE rm.roomId = %s AND  rm.userId != %s", [idRoom, idUser])
     for row in value:
         ret.append(row[0])
-    print ("getAllDifferentPeople");
-    print (ret);
+    print("getAllDifferentPeople");
+    print(ret);
     return ret
-    
+
+
 def insertQuizQuestion(idUser,askedAboutId,questionId):
     value = exec_query("INSERT INTO QuizQuestion ( askedUserId, aboutUserId, questionId) VALUES (%s,%s,%s)", [idUser,askedAboutId,questionId])
-    #SELECT `id` FROM `QuizQuestion` WHERE `askedUserId` = 3 AND `aboutUserId` = 4 and `questionId` = 5
+    # SELECT `id` FROM `QuizQuestion` WHERE `askedUserId` = 3 AND `aboutUserId` = 4 and `questionId` = 5
     value = exec_query("SELECT id FROM QuizQuestion WHERE askedUserId = %s AND aboutUserId = %s and questionId = %s", [idUser,askedAboutId,questionId])
     print(value);
     return value[0]
@@ -128,5 +132,5 @@ def getAnswer(questionId,userId):
     print("getAnswer")
     print(value)
     if len(value) != 1:
-        return (404, "Answer not found")
-    return (value[0][0], value[0][1])
+        return 404, "Answer not found"
+    return value[0][0], value[0][1]

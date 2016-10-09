@@ -212,8 +212,13 @@ function startQuiz(userID, roomID){
 	var buttonMid="\">";
 	var buttonPost="</button>";
 	$.get(server+"/getQuizQuestion?idRoom="+roomID+"&idUser="+userID,function(data){
-	console.log(data);
+		console.log(data);
 		serverRepply=JSON.parse(data);
+		if (serverRepply.error != null) {
+			console.log("Error: " + serverRepply.error);
+			return;
+		}
+
 		quizQuestionID=serverRepply.id;
 		quizQuestionText=serverRepply.question;
 		quizAnswers=serverRepply.answers;

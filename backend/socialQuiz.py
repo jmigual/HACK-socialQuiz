@@ -74,17 +74,15 @@ def get_rooms():
 def fill_room():
     json_data = request.get_json()
     if json_data is None:
-        return "Error: no JSON found"
+        return json.dumps({"error": "no JSON found"})
     else:
         room_id = json_data["id"]
         questions = json_data["question"]
-
         for q in questions:
             db.exec_query("INSERT INTO Question (roomId, question) VALUES (%s, %s)", [room_id, q])
 
-        return "Data received"
+        return json.dumps({"info": "Data received"})
 
-        
         
 @app.route('/openRoom')
 def open_room():
@@ -92,27 +90,32 @@ def open_room():
     values = db.exec_query("UPDATE Room r SET r.status='started' WHERE r.id = %s", [id_room])
     return "status='started'"
 
+
 @app.route('/closeRoom')
 def close_room():
     id_room = request.args.get('id')
-    values = db.exec_query("UPDATE Room  r SET r.status='closed' WHERE r.id = %s", [id_room])
-    return "status='closed'"
-    
+    db.exec_query("UPDATE Room  r SET r.status='closed' WHERE r.id = %s", [id_room])
+    return json.dumps({"info": "status='closed'"})
+
+
 @app.route('/finishRoom')
 def finish_room():
     id_room = request.args.get('id')
     values = db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
     ranking = []
-    #for
-    #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
-    values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId",[])
-    #SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
+    # for
+    # SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
+    values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) "
+                           "FROM quizquestion qq "
+                           "WHERE qq.correctanswerId = qq.answeredId", [])
+    # SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
     return json.dumps(values)
+
 
 @app.route('/statusRoom')
 def status_room():
     id_room = request.args.get('id')
-    #SELECT status FROM Room WHERE id = 1
+    # SELECT status FROM Room WHERE id = 1
     values = db.exec_query("SELECT status FROM Room WHERE id = %s", [id_room])
     return json.dumps({
           "status": values[0][0] 
@@ -136,7 +139,7 @@ def post_room_answers():
     json_data = request.get_json()
     if json_data is None:
         print("no json");
-        return "Error: no JSON found"
+        return json.dumps({"error": "no JSON found"})
     else:
         user_id = json_data["idUser"]
         values = []
@@ -144,7 +147,7 @@ def post_room_answers():
             values.append((a["id"], user_id, a["text"]))
             print(values[len(values) - 1])
         db.exec_many_query("INSERT INTO Answer (questionId, userId, answer) VALUES(%s,%s,%s)", values)
-        return "Data received"
+        return json.dumps({"info": "Data received"})
 
 
 @app.route('/getQuizQuestion')
@@ -173,7 +176,7 @@ def get_question():
 
     if len(questionId) > 0 and 0 < len(askedAboutId):
         quizQuestionId = db.insertQuizQuestion(idUser,askedAboutId[0],questionId[0])
-        
+
         otherUsers = db.getAllDifferentPeople(idRoom,askedAboutId[0])
         
         random.shuffle(otherUsers)
@@ -208,7 +211,7 @@ def get_question():
               "answers": answerJson
             })
     else:
-        return "Not avaible questions for this user in this room"
+        return json.dumps({"error": "Not available questions for this user in this room"})
 
 
 @app.route('/postAnswer')
@@ -222,11 +225,8 @@ def post_answer():
     #update UPDATE quizquestion SET answeredId=5 WHERE id = 1
     db.exec_query("UPDATE quizquestion SET answeredId=%s WHERE id = %s", [quizQuestionId,quizQuestionId])
 
-
-
-
     if value is None:
-        return "Internal server error"
+        return json.dumps({"error": "Internal server error"})
     return json.dumps({
           "correct": value[0] == answerId,
           "question": value[1],
