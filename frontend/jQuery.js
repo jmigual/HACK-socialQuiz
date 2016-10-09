@@ -166,7 +166,7 @@ function startAdmin(userID){
                     	ranking=serverReply.ranking;
                     	console.log(ranking);
 
-                    	var text="<table class='table table-striped'><thead><tr><th>Email</th><th>Score</th></tr></thead><tbody>";
+                    	var text="<table class='table table-striped'><thead><tr><th>Name</th><th>Score</th></tr></thead><tbody>";
 						$.each(ranking,function(i,value){
 							text=text+`<tr><td>${value.email}</td><td>${value.correct}</td></tr>`;
 						});
