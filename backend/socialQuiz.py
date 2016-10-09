@@ -63,11 +63,11 @@ def create_room():
 @app.route('/getRooms')
 def get_rooms():
     user_id = request.args.get('userId');
-    values = db.exec_query("SELECT id FROM Room WHERE creator=%s",[user_id]);
-    response=[];
+    values = db.exec_query("SELECT r.id, r.status FROM Room r WHERE r.creator=%s", [user_id]);
+    response = [];
     for val in values:
-        response.append(val[0]);
-    return json.dumps({"rooms": response})
+        response.append({"id": val[0], "status": val[1]})
+    return json.dumps(response)
 
 
 @app.route('/fillRoom', methods=['POST'])
@@ -87,8 +87,9 @@ def fill_room():
 @app.route('/openRoom')
 def open_room():
     id_room = request.args.get('id')
-    values = db.exec_query("UPDATE Room r SET r.status='started' WHERE r.id = %s", [id_room])
-    return "status='started'"
+    print(id_room)
+    db.exec_query("UPDATE Room r SET r.status='started' WHERE r.id = %s", [id_room])
+    return json.dumps({"info": "status='started'"})
 
 
 @app.route('/closeRoom')
@@ -101,13 +102,14 @@ def close_room():
 @app.route('/finishRoom')
 def finish_room():
     id_room = request.args.get('id')
-    values = db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
+    db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
     ranking = []
     # for
     # SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
     values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) "
-                           "FROM quizquestion qq "
-                           "WHERE qq.correctanswerId = qq.answeredId", [])
+                           "FROM QuizQuestion qq "
+                           "WHERE qq.correctanswerId = qq.answeredId "
+                           "GROUP BY qq.id", [])
     # SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
     return json.dumps(values)
 
@@ -234,4 +236,4 @@ def post_answer():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1')
+    app.run(debug=True, host='127.0.0.1', threaded=True)
