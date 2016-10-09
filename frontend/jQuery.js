@@ -56,8 +56,8 @@ function endEmail(userID,email){
 		var roomID = urlVars["id"];
 		$.get(server + "/joinRoom?idRoom="+roomID+"&email="+email);
 		$.get(server+"/statusRoom?id="+roomID,function(data){
-			serverRepply=JSON.parse(data);
-			if (serverRepply.status== "waiting"){
+			serverReply=JSON.parse(data);
+			if (serverReply.status== "waiting"){
 				startQuestions(userID,roomID)
 			}
 			else{
@@ -77,8 +77,8 @@ function startQuestions(userID, roomID){
 	$("#questionContainer").fadeIn();
 	//shitty way to do this
 	$.get(server+"/getRoomQuestion?idRoom="+roomID+"&idUser="+userID, function(data){
-		serverRepply=JSON.parse(data);
-		questions=serverRepply.questions;
+		serverReply=JSON.parse(data);
+		questions=serverReply.questions;
 		var answers=[];
 		setQuestions(userID,roomID,questions,answers,0);
 	});
@@ -150,15 +150,7 @@ function startAdmin(userID){
 	            $(button).html(text);
         	}
 
-/*
-    var part1="<p style=\"display: inline; color: white\">Room #<b>";//ID
-    var part2="</b> status: ";//status
-    var part3="</p>"
-    var part35="\n<button type=\"button\" class=\"btn btn-default\" id=\"";//ID
-    var part4="\">";//buttonText
-    var part5="</button><br>";
 
-*/
 			$("#checkboxContainer").append(par, button,'<br>');
 			$(button).click(function(){
 				var id = $(this).attr("dbid");
@@ -260,13 +252,13 @@ function startQuiz(userID, roomID){
 function answerQuiz(questionID,answerID,userID,roomID){
 	$("#quizAnswerColumn").empty();
 	$.get(server+"/postAnswer?quizQuestionId="+questionID+"&answerId="+answerID,function(data){
-		serverRepply=JSON.parse(data);
-		console.log(serverRepply);
-		if (serverRepply.correct){
+		serverReply=JSON.parse(data);
+		console.log(serverReply);
+		if (serverReply.correct){
 			alert("Correct answer");
 		}
 		else{
-			alert("Incorrect answer\n the right answer was: "+serverRepply.correctAnswer.text);
+			alert("Incorrect answer\n the right answer was: "+serverReply.correctAnswer.text);
 		}
 		startQuiz(userID,roomID);
 	});

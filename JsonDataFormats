@@ -57,7 +57,7 @@ useful links:
 
 /finishRoom&id=idRoom
 {
-    [{"email": "hola@iñi", "correct": 23}]
+    "ranking": [{"email": "hola@iñi", "correct": 23}]
 }
 
 /statusRoom&id=idRoom
