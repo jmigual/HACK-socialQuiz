@@ -121,12 +121,13 @@ function openRoom() {
 
 function startAdmin(userID){
 	$("#adminContainer").fadeIn();
+	$("#newRoom").off("click");
 	$("#newRoom").click(function(){newRoom(userID)});
 	$("#checkboxContainer").empty();
 
 	$.get(server+"/getRooms?userId="+userID, function(data){
 		var rooms = JSON.parse(data);
-		console.log(rooms);
+		//console.log(rooms);
 		//for(var r in rooms) {
 		for (var i in rooms) {
 			var r = rooms[i];
@@ -160,10 +161,20 @@ function startAdmin(userID){
                         startAdmin(userID);
                     });
                 } else if (status == "started") {
-                    $.get(server + `/finishRoom?id=${id}`, function (ranking) {
-                        $("#urlModalText").html(ranking);
-                        $("#urlModal").modal();
-                        startAdmin(userID);
+                    $.get(server + `/finishRoom?id=${id}`, function (data) {
+                    	serverReply = JSON.parse(data);
+                    	ranking=serverReply.ranking;
+                    	console.log(ranking);
+
+                    	var text="<table class='table table-striped'><thead><tr><th>Email</th><th>Score</th></tr></thead><tbody>";
+						$.each(ranking,function(i,value){
+							text=text+`<tr><td>${value.email}</td><td>${value.correct}</td></tr>`;
+						});
+						text=text+"</tbody></table>";
+						$("#modal-title").text("Ranking");
+						$("#urlModalText").html(text);
+						$("#urlModal").modal();
+						startAdmin(userID);
                     });
                 }
 				$(this).off("click");
@@ -204,10 +215,12 @@ function newRoom(userID){
 			finishRoom.off("click");
 			$("#cancelRoom").off("click");
 			$("#newRoomContainer").fadeOut();
-			$("#adminContainer").fadeIn();
+			startAdmin(userID);
 			//alert(roomID);
 
 			var link = window.location.href + "?id=" + roomID;
+
+			$("#modal-title").text("Generated URL");
 			$("#urlModalText").html("<a href='" + link + "'>" + link + "</a>");
 			$("#urlModal").modal();
 		});
@@ -232,6 +245,7 @@ function startQuiz(userID, roomID){
 		console.log(data);
 		var serverReply=JSON.parse(data);
 		if (serverReply.error != null) {
+			$("#quizQuestionText").text(serverReply.error);
 			console.log("Error: " + serverReply.error);
 			return;
 		}

@@ -13,9 +13,9 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
 
-	<div class="container-fluid" id="emailContainer" style="background: black">
+
+	<div class="container-fluid" id="emailContainer" style="background: black;">
 		<div class="row-fluid">
 			<div class="centering text-center">
 				<h3 style="color: white">Enter your email:</h3>
@@ -50,7 +50,7 @@
 		</div>
 	</div>
 
-    <div class="container-fluid" id="adminContainer" style="background: green; display: none">
+	<div class="container-fluid" id="adminContainer" style="background: green; display: none">
 		<div class="row-fluid">
 			<div class="centering text-center">
 				<h3 style="color: black">Admin tools:</h3>
@@ -85,25 +85,27 @@
 		</div>
 	</div>
 
-	<!-- Modal -->
-<div id="urlModal" class="modal fade" role="dialog">
-  <div class="modal-dialog">
 
-    <!-- Modal content-->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Generated URL</h4>
-      </div>
-      <div class="modal-body">
-        <p id="urlModalText"></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-      </div>
-    </div>
-  </div>
-</div>
+
+	<!-- Modal -->
+	<div id="urlModal" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title" id="modal-title">Generated URL</h4>
+				</div>
+				<div class="modal-body">
+					<p id="urlModalText"></p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 
 </body>
 </html>
