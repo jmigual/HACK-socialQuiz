@@ -50,7 +50,10 @@ useful links:
 
 /closeRoom&id=idRoom
 
-
+/statusRoom&id=idRoom
+{
+  "status"="started"/"finished";
+}
 
 
 //Room questions

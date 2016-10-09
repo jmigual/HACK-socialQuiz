@@ -89,11 +89,35 @@ function startAdmin(userID){
 	$("#emailContainer").fadeOut();
 	$("#adminContainer").fadeIn();
 	$("#newRoom").click(function(){newRoom(userID)});
-	$("#manageRooms").click(function(){
-		$.get(server+"/getRooms?userId="+userID,function(data){
-			serverRepply=JSON.parse(data);
-			console.log(serverRepply);
-		});
+
+	var preToggle="<div class=\"checkbox\"><label><input type=\"checkbox\" data-toggle=\"toggle\" id=\"";
+	var midToggle="\">";
+	var postToggle="</label></div>";
+
+	$.get(server+"/getRooms?userId="+userID,function(data){
+		serverRepply=JSON.parse(data);
+		var rooms= serverRepply.rooms;
+		for (var i=0; i<rooms.length; i++){
+			var r=rooms[i];
+			$("#checkboxContainer").append(preToggle+r+midToggle+r+postToggle);
+
+			$.get(server+"/statusRoom?id="+r,function(data){
+				serverRepply=JSON.parse(data);
+				var open='off';
+				if (data.status=="started") open='on';	
+				$("#"+r).bootstrapToggle({
+					on: 'Open',
+					off: 'Closed'
+				}).bootstrapToggle(open).change(function(){
+					if($(this).prop('checked')){
+						$.get(server+"/openRoom?id="+r);
+					}
+					else{
+						$.get(server+"/closeRoom?id="+r);
+					}
+				});
+			});
+		}
 	});
 }
 
