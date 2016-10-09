@@ -270,4 +270,4 @@ def post_answer():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', threaded=True)
+    app.run(debug=True, host='0.0.0.0', threaded=True)
