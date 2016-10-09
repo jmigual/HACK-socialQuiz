@@ -186,6 +186,9 @@ def get_question():
         
         answers = []
         (answerId,textId) = db.getAnswer(questionId[0],askedAboutId[0])
+
+        db.exec_query("UPDATE QuizQuestion SET correctanswerId=%s WHERE id = %s", [answerId, quizQuestionId])
+
         answers.append((answerId,textId))
         if min(numberOfAnswers-1 , len(otherUsers)) > 0:
             for i in range( min(numberOfAnswers-1 , len(otherUsers) )):
@@ -206,7 +209,7 @@ def get_question():
                               "FROM QuizQuestion "
                               "WHERE askedUserId=%s AND aboutUserId=%s AND questionId=%s",
                               [idUser, askedAboutId[0], questionId[0]])
-        quizQuestionId = value[0]
+        quizQuestionId = value[0][0]
 
         value = db.exec_query("SELECT q.question "
                               "FROM Question q "
@@ -237,7 +240,7 @@ def post_answer():
     quizQuestionId = request.args.get('quizQuestionId')
     answerId = request.args.get('answerId')
 
-    db.exec_query("UPDATE QuizQuestion SET answeredId=%s WHERE id = %s", [answerId ,quizQuestionId])
+    db.exec_query("UPDATE QuizQuestion SET answeredId = %s WHERE id = %s", [answerId, quizQuestionId])
 
 
     value = db.exec_query("SELECT qq.answeredId , qq.correctanswerId, qq.questionId  FROM QuizQuestion qq WHERE qq.id = %s", [quizQuestionId])
@@ -246,11 +249,12 @@ def post_answer():
     correctanswerId = value[0][1]
     questionId = value[0][2]
 
-    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s " , [quizQuestionId])
+    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s ", [correctanswerId] )
 
-    text = value[0][0]
-
-
+    if len(value) > 0:
+        text = value[0][0]
+    else :
+        text = "something when wrong"
 
     #update UPDATE quizquestion SET answeredId=5 WHERE id = 1
 
@@ -259,7 +263,7 @@ def post_answer():
     return json.dumps({
           "correct": answeredId == correctanswerId,
           "question": questionId,
-          "correctAnswer": {"id": answeredId, "text": text}
+          "correctAnswer": {"id": correctanswerId, "text": text}
         })
 
 if __name__ == '__main__':
