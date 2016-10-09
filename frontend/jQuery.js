@@ -261,7 +261,8 @@ function answerQuiz(questionID,answerID,userID,roomID){
 	$("#quizAnswerColumn").empty();
 	$.get(server+"/postAnswer?quizQuestionId="+questionID+"&answerId="+answerID,function(data){
 		serverRepply=JSON.parse(data);
-		if (serverRepply.correct=="true"){
+		console.log(serverRepply);
+		if (serverRepply.correct){
 			alert("Correct answer");
 		}
 		else{
