@@ -36,7 +36,7 @@ def join_room():
     idRoom = request.args.get('idRoom')
     email = request.args.get('email')
     id_user = db.register_or_get_email(email)
-    db.exec_query("INSERT INTO 	RoomMembers (roomId, userId) VALUES (%s,%s)", [idRoom, id_user])
+    db.exec_query("REPLACE INTO RoomMembers (roomId, userId) VALUES (%s,%s)", [idRoom, id_user])
     return json.dumps({"id": id_user})
     
 @app.route('/answeredRoom')
@@ -104,8 +104,10 @@ def finish_room():
     values = db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
     ranking = []
     #for
-    #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN 
-    return "Updated state"
+    #SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
+    values = db.exec_query("SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId")
+    #SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
+    return return json.dumps(values)
 
 @app.route('/statusRoom')
 def status_room():
