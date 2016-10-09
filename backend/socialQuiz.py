@@ -227,7 +227,7 @@ def get_question():
                               [askedAboutId[0]])
         user_name = value[0][0]
 
-        question_text = "What did " + user_name + " answer about " + question_text + " ?"
+        question_text = "What did " + user_name + " answer to '" + question_text + "' ?"
         
         return json.dumps({
               "id": quizQuestionId,
