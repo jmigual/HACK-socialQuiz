@@ -106,7 +106,7 @@ def finish_room():
     ranking = []
     # for
     # SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
-    values = db.exec_query("SELECT u.email , COUNT(qq.id) FROM QuizQuestion qq INNER JOIN Users u ON (qq.askedUserId = u.id) INNER JOIN RoomMembers rm ON (u.id = rm.userId) WHERE qq.correctanswerId = qq.answeredId AND rm.roomId = %s GROUP BY u.email ORDER BY COUNT(qq.id)", [id_room])
+    values = db.exec_query("SELECT u.email , COUNT(qq.id) FROM QuizQuestion qq INNER JOIN Users u ON (qq.askedUserId = u.id) INNER JOIN RoomMembers rm ON (u.id = rm.userId) WHERE qq.correctanswerId = qq.answeredId AND rm.roomId = %s GROUP BY u.email ORDER BY COUNT(qq.id) DESC", [id_room])
     # SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
     ranking = []
     for row in values:
