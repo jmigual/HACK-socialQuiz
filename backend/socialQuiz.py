@@ -170,9 +170,8 @@ def get_question():
         possibleUsersToAsk = db.getAllDifferentPeople(idRoom,idUser)
         if len(possibleQuestions) > 0:
             askedAboutId = random.sample(possibleUsersToAsk,1)
-    
 
-    if  len(questionId) > 0  and 0 < len(askedAboutId) :
+    if len(questionId) > 0 and 0 < len(askedAboutId):
         quizQuestionId = db.insertQuizQuestion(idUser,askedAboutId[0],questionId[0])
         
         otherUsers = db.getAllDifferentPeople(idRoom,askedAboutId[0])
@@ -197,7 +196,10 @@ def get_question():
             answerJson.append({"id": answerId ,"text":textId})
         print (quizQuestionId);
         #SELECT 'question' FROM 'Question' WHERE 'id' = 3
-        value = db.exec_query("SELECT id FROM quizquestion WHERE askedUserId=%s AND aboutUserId=%s AND questionId=%s", [idUser,askedAboutId[0],questionId[0]])
+        value = db.exec_query("SELECT id "
+                              "FROM QuizQuestion "
+                              "WHERE askedUserId=%s AND aboutUserId=%s AND questionId=%s",
+                              [idUser, askedAboutId[0], questionId[0]])
         quizQuestionId = value[0]
         
         return json.dumps({

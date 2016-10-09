@@ -117,7 +117,7 @@ def insertQuizQuestion(idUser,askedAboutId,questionId):
     print(value);
     return value[0]
 
-    
+
 def getAnswer(questionId,userId):
     print("getAnswer")
     print(questionId)
