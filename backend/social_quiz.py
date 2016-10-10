@@ -7,8 +7,8 @@ import random
 from flask import Flask, send_from_directory
 from flask import request
 
-from backend.flaskrun import flaskrun
-from backend.datab import social_database as db
+from flaskrun.flaskrun import flask_run
+import datab.social_database as db
 
 app = Flask(__name__)
 numberOfAnswers = 4
@@ -288,4 +288,4 @@ def post_answer():
 
 
 if __name__ == '__main__':
-    flaskrun.flask_run(app)
+    flask_run(app)
