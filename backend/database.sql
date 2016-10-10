@@ -43,7 +43,7 @@ CREATE TABLE QuizQuestion
 	askedUserId INT REFERENCES Users(id),
 	aboutUserId INT REFERENCES Users(id),
 	questionId INT REFERENCES Room(id),
-	correctanswerId INT REFERENCES Answer(id),
+	correctAnswerId INT REFERENCES Answer(id),
 	answeredId INT REFERENCES Answer(id)
 );
 
