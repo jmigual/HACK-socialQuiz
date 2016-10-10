@@ -1,80 +1,204 @@
 FORMAT: 1A
-HOST: http://polls.apiblueprint.org/
+HOST: http://socialquiz.org/
 
 # Social Quiz
 
-Polls is a simple API allowing consumers to view polls and vote in them.
+Social Quiz is a simple API to create easy quiz and learn more about people.
 
-## Questions Collection [/questions]
+## Group Session
 
-### List All Questions [GET]
+Session options such as log in or register
+
+
+## Log in [/get_user_id{?email}]
+
+Log in with the selected email. If the email it's not in the database this is the same as register
+
+### Log in [GET]
+
++ Parameters
+    + email (text, required) - User's email to log in
+    
++ Response 200 (application/json)
+    
+    + Attributes
+        + id (number) - User's id
+    
+    + Body
+        
+            {
+                "id": 12345678
+            }
+    
+
+## Register [/register{?email}]
+
+Registers a new user
+
+### Register [GET]
+
++ Parameters
+    + email (text, required) - Email to register the user
 
 + Response 200 (application/json)
 
-        [
+    + Attributes
+        + id (number) - Created user id
+
+    + Body
+    
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 2048
-                    }, {
-                        "choice": "Python",
-                        "votes": 1024
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 512
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 256
-                    }
-                ]
+                "id": 12345678
             }
-        ]
+            
+## Join [/join_room{?id_room,email}]
 
-### Create a New Question [POST]
+Join an existing room
 
-You may create your own question using this action. It takes a JSON
-object containing a question and a collection of answers in the
-form of choices.
+### Join a Room [GET]
+
++ Parameters
+    + id_room (number, required) - Room id to join
+    + email (text, required) - Email of the user
+    
++ Response 200 (application/json)
+    
+    + Attributes
+        + id (number) - User id for the sent mail
+    
+    + Body
+    
+            {
+                "id": 12345678
+            }
+            
+## Group Room
+
+Room related options
+
+## Create Room [/create_room{?user_id}]
+
+Create a new room
+
+### Create Room [GET]
+
++ Parameters
+    + user_id (number, required) - User that creates the room
+
++ Response 200 (application/json)
+    + Attributes
+        + id (number) - Id of the created room
+    + Body
+    
+            {
+                "id": 123
+            }
+
+## Answered [/answered_room{?room_id,user_id}]
+
+To know if a certain user has answered a room
+
+### Answered [GET]
+
++ Parameters
+    + room_id (number, required) - Room id
+    + user_id (number, required) - User id
+    
++ Response 200 (application/json)
+    + Attributes
+        + answered (boolean) - True if the user has answered the room
+        
+    + Body
+            
+            {
+                "answered": false
+            }
+
+## Get Rooms [/get_rooms{?user_id}]
+
+Get the rooms that a user has created
+
+### Get rooms [GET]
+
++ Parameters
+    + user_id (number, required) - User id
+    
++ Response 200 (application/json)
+    + Attributes
+        + rooms (array[number]) - List containing all the user's rooms.
+        
+    + Body
+            
+            {
+                "rooms": [123, 124, 125]
+            }
+            
+
+## Add questions [/fill_room]
+
+### Fill Room [POST]
+
 
 + Request (application/json)
 
-        {
-            "question": "Favourite programming language?",
-            "choices": [
-                "Swift",
-                "Python",
-                "Objective-C",
-                "Ruby"
-            ]
-        }
-
-+ Response 201 (application/json)
-
-    + Headers
-
-            Location: /questions/2
-
-    + Body
-
             {
-                "question": "Favourite programming language?",
-                "published_at": "2015-08-05T08:40:51.620Z",
-                "choices": [
-                    {
-                        "choice": "Swift",
-                        "votes": 0
-                    }, {
-                        "choice": "Python",
-                        "votes": 0
-                    }, {
-                        "choice": "Objective-C",
-                        "votes": 0
-                    }, {
-                        "choice": "Ruby",
-                        "votes": 0
-                    }
-                ]
+                "id": 322,
+                "question": ["How old are you?", "What's your favourite color?" ]
             }
+
+
++ Attributes
+    + id: 322 (number, required) - Room id
+    + question: "How old are you?", "What's your favourite color?" (array[string], required) - Question to add
+        
++ Response 200 (application/json)
+
+        {
+            "info": "Your data has been received"
+        }
+        
+        
+## Group Managing Room
+
+
+## Close Room [/close_room{?id_room}]
+
+Closes the room and forbids adding more answers
+
+### Close room [GET]
+
++ Parameters
+    + id_room (number, required) - Room id to be closed
+    
++ Response 200 (application/json)
+
+        {
+            "info": "The room has been closed successfully"
+        }
+        
+        
+## Finish Room [/finish_room{?id_room}]
+
+Prevents the users from answering more quizzes and returns the ranking
+
+### Finish room [GET]
+
++ Parameters
+    + id_room (number, required) - Room id to be finished
+    
++ Response 200 (application/json)
+
+    + Attributes
+        + ranking (array[Ranking]) - List containing all the info
+        
+    + Body
+    
+            {
+                "ranking": [{"email": "hello@g.com", "correct": 15}]
+            }
+
+## Data Structures
+
+### Ranking
++ email: hello@g.com
++ correct: 23
