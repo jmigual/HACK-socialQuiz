@@ -1,0 +1,339 @@
+FORMAT: 1A
+HOST: http://socialquiz.org/
+
+# Social Quiz
+
+Social Quiz is a simple API to create easy quiz and learn more about people. 
+
+Useful links:
+
+- [jQuery (w3Schools)](http://www.w3schools.com/jquery/jquery_ajax_intro.asp)
+
+## Group Session
+
+Session options such as log in or register
+
+
+## Log in [/get_user_id{?email}]
+
+Log in with the selected email. If the email it's not in the database this is the same as register
+
+### Log in [GET]
+
++ Parameters
+    + email (text, required) - User's email to log in
+    
++ Response 200 (application/json)
+    
+    + Attributes
+        + id (number) - User's id
+    
+    + Body
+        
+            {
+                "id": 12345678
+            }
+    
+
+## Register [/register{?email}]
+
+Registers a new user
+
+### Register [GET]
+
++ Parameters
+    + email (text, required) - Email to register the user
+
++ Response 200 (application/json)
+
+    + Attributes
+        + id (number) - Created user id
+
+    + Body
+    
+            {
+                "id": 12345678
+            }
+            
+## Join [/join_room{?id_room,email}]
+
+Join an existing room
+
+### Join a Room [GET]
+
++ Parameters
+    + id_room (number, required) - Room id to join
+    + email (text, required) - Email of the user
+    
++ Response 200 (application/json)
+    
+    + Attributes
+        + id (number) - User id for the sent mail
+    
+    + Body
+    
+            {
+                "id": 12345678
+            }
+            
+## Group Room
+
+Room related options
+
+## Create Room [/create_room{?user_id}]
+
+Create a new room
+
+### Create Room [GET]
+
++ Parameters
+    + user_id (number, required) - User that creates the room
+
++ Response 200 (application/json)
+    + Attributes
+        + id (number) - Id of the created room
+    + Body
+    
+            {
+                "id": 123
+            }
+
+## Answered [/answered_room{?room_id,user_id}]
+
+To know if a certain user has answered a room
+
+### Answered [GET]
+
++ Parameters
+    + room_id (number, required) - Room id
+    + user_id (number, required) - User id
+    
++ Response 200 (application/json)
+    + Attributes
+        + answered (boolean) - True if the user has answered the room
+        
+    + Body
+            
+            {
+                "answered": false
+            }
+
+## Get Rooms [/get_rooms{?user_id}]
+
+Get the rooms that a user has created
+
+### Get rooms [GET]
+
++ Parameters
+    + user_id (number, required) - User id
+    
++ Response 200 (application/json)
+    + Attributes
+        + rooms (array[number]) - List containing all the user's rooms.
+        
+    + Body
+            
+            {
+                "rooms": [123, 124, 125]
+            }
+            
+
+## Add questions [/fill_room]
+
+### Fill Room [POST]
+
+
++ Request (application/json)
+
+            {
+                "id": 322,
+                "question": ["How old are you?", "What's your favourite color?" ]
+            }
+
+
++ Attributes
+    + id: 322 (number, required) - Room id
+    + question: How old are you?, What's your favourite color? (array[string], required) - Question to add
+        
++ Response 200 (application/json)
+
+        {
+            "info": "Your data has been received"
+        }
+        
+        
+## Group Managing Room
+
+
+## Close Room [/close_room{?room_id}]
+
+Closes the room and forbids adding more answers
+
+### Close room [GET]
+
++ Parameters
+    + room_id (number, required) - Room id to be closed
+    
++ Response 200 (application/json)
+
+        {
+            "info": "The room has been closed successfully"
+        }
+        
+        
+## Finish Room [/finish_room{?room_id}]
+
+Prevents the users from answering more quizzes and returns the ranking
+
+### Finish room [GET]
+
++ Parameters
+    + room_id (number, required) - Room id to be finished
+    
++ Response 200 (application/json)
+
+    + Attributes
+        + ranking (array[Ranking]) - List containing all the info
+        
+    + Body
+    
+            {
+                "ranking": [{"email": "hello@g.com", "correct": 15}]
+            }
+
+## Room status [/status_room{?room_id}]
+
+To get the status of a certain room
+
+### Room status [GET]
+
++ Parameters
+    + room_id (number, required) - Room Id to check the status
+    
++ Response 200 (application/json)
+
+    + Attributes
+        + status (enum[string], required) 
+        
+            Current room's status
+            
+            + Members
+                + waiting
+                + started
+                + finished
+    + Body
+        
+            {
+                "status": "finnished"
+            }
+
+## Group Room questions
+
+## Get Room Question [/get_room_question{?room_id}]
+
+To obtain a new question to be answered by the user
+
+### Get Room Question [GET]
+
++ Parameters
+    + room_id (number, required) - Room id to get the questions
+
++ Response 200 (application/json)
+
+    + Attributes
+        + questions (array[Question]) - Array of the returned questions
+        
+    + Body
+    
+            {
+                "questions":
+                [
+                    {"id": 2113, "text": "How do you feel?"},
+                    {"id": 2114, "text": "What's your favourite color?"}
+                ]
+            }
+
+## Post Room Answers [/post_room_answers]
+
+Post the user's answers to all the questions
+
+### Post Room Answers [POST]
+
++ Request (application/json)
+
+        {
+            "room_id" : 234,
+            "user_id" : 23456,
+            "answers":
+            [
+                {"id": 2113, "text": "Great" }, 
+                {"id": 2114, "text": "Not from you" }
+            ]
+        }
+        
++ Attributes
+    + room_id (number, required) - Current room's ID
+    + user_id (number, required) - Current user's ID
+    + answers (array[Answer], optional) 
+        
++ Response 200 (application/json)
+
+        {
+            "info": "Your data has been received"
+        }
+
+## Group Quiz Questions
+
+## Get a Quiz Question [/get_quiz_question{?room_id,user_id}]
+
+Get's a quiz question for a user
+
+### Get Quiz Question [GET]
+
++ Parameters
+    + room_id (number, required) - Current room's ID
+    + user_id (number, required) - Current user's ID
+    
++ Response 200 (application/json)
+    + Attributes
+        + id: 123 (number) - Quiz Question's ID
+        + question: What's your age? (string) - Question text
+        + answers (array[Answer]) - Question's possible answers
+
+## Send Quiz answer [/post_quiz_answer{?quiz_question_id,quiz_answer_id}]
+
+Send the Quiz guessed answer by the user
+
+### Send Quiz Answer [POST]
+
++ Parameters
+    + quiz_question_id (number, required) - The question ID to be guessed by the user
+    + quiz_answer_id (number, required) - The answer ID guessed by the user
+
++ Response 200 (application/json)
+    + Attributes
+        + correct: false (boolean) - If the answer send by the user is correct
+        + question: What's your age? (string) - Original question text
+        + correct_answer (array[Answer]) - Correct answer
+        
+    + Body
+
+            {
+              "correct": false,
+              "question": "Whats your age?",
+              "correctanswer": {"id": 34,"text":"Ans1"} 
+            }
+
+## Data Structures
+
+### Ranking
++ email: hello@g.com (string)
++ correct: 23 (number)
+
+### Question
++ id: 2113 (number) - Question's ID
++ text: How do you feel? - Question's text
+
+### Answer
++ id: 1234 (number) - Answer's ID
++ text: My favourite color is red - Answer's text
