@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import json
-import random
 import os.path
+import random
 
 from flask import Flask, send_from_directory
 from flask import request
 
-import datab.socialDatabase as db
+import backend.datab.social_database as db
 
 app = Flask(__name__)
 numberOfAnswers = 4
@@ -46,7 +46,7 @@ def join_room():
     id_room = request.args.get('idRoom')
     email = request.args.get('email')
     id_user = db.register_or_get_email(email)
-    db.exec_query("REPLACE INTO RoomMembers (roomId, userId) VALUES (%s,%s)", [id_room, id_user])
+    db.exec_query("REPLACE INTO room_members (room_id, user_id) VALUES (%s,%s)", [id_room, id_user])
     return json.dumps({"id": id_user})
 
 
@@ -56,7 +56,7 @@ def answered_room():
     user_id = request.args.get('userId')
     values = db.exec_query("SELECT a.id "
                            "FROM answer a INNER JOIN question q "
-                           "WHERE a.questionId = q.id AND q.roomId = %s AND a.userId= %s", [id_room, user_id])
+                           "WHERE a.question_id = q.id AND q.room_id = %s AND a.user_id= %s", [id_room, user_id])
     # return json.dumps(values)
     return json.dumps({"answered": len(values) > 0})
 
@@ -71,14 +71,14 @@ def get_user_id():
 @app.route('/createRoom')
 def create_room():
     user_id = request.args.get('userId')
-    room_id = db.exec_query("INSERT INTO Room (creator) VALUES (%s)", [user_id])
+    room_id = db.exec_query("INSERT INTO room (creator) VALUES (%s)", [user_id])
     return json.dumps({"id": room_id})
 
 
 @app.route('/getRooms')
 def get_rooms():
     user_id = request.args.get('userId')
-    values = db.exec_query("SELECT r.id, r.status FROM Room r WHERE r.creator=%s", [user_id])
+    values = db.exec_query("SELECT r.id, r.status FROM room r WHERE r.creator=%s", [user_id])
     response = []
     for val in values:
         response.append({"id": val[0], "status": val[1]})
@@ -94,45 +94,44 @@ def fill_room():
         room_id = json_data["id"]
         questions = json_data["question"]
         for q in questions:
-            db.exec_query("INSERT INTO Question (roomId, question) VALUES (%s, %s)", [room_id, q])
+            db.exec_query("INSERT INTO question (room_id, question) VALUES (%s, %s)", [room_id, q])
 
         return json.dumps({"info": "Data received"})
 
-        
+
 @app.route('/openRoom')
 def open_room():
     id_room = request.args.get('id')
     print(id_room)
-    db.exec_query("UPDATE Room r SET r.status='started' WHERE r.id = %s", [id_room])
+    db.exec_query("UPDATE room r SET r.status='started' WHERE r.id = %s", [id_room])
     return json.dumps({"info": "status='started'"})
 
 
 @app.route('/closeRoom')
 def close_room():
     id_room = request.args.get('id')
-    db.exec_query("UPDATE Room  r SET r.status='closed' WHERE r.id = %s", [id_room])
+    db.exec_query("UPDATE room  r SET r.status='closed' WHERE r.id = %s", [id_room])
     return json.dumps({"info": "status='closed'"})
 
 
 @app.route('/finishRoom')
 def finish_room():
     id_room = request.args.get('id')
-    db.exec_query("UPDATE Room  r SET r.status='finished' WHERE r.id = %s", [id_room])
+    db.exec_query("UPDATE room  r SET r.status='finished' WHERE r.id = %s", [id_room])
     # for
     # SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
     values = db.exec_query("SELECT u.email , COUNT(qq.id) "
-                           "FROM QuizQuestion qq "
-                           "INNER JOIN Users u ON (qq.askedUserId = u.id) "
-                           "INNER JOIN RoomMembers rm ON (u.id = rm.userId) "
-                           "WHERE qq.correctanswerId = qq.answeredId AND rm.roomId = %s "
+                           "FROM quiz_question qq "
+                           "INNER JOIN Users u ON (qq.asked_user_id = u.id) "
+                           "INNER JOIN room_members rm ON (u.id = rm.user_id) "
+                           "WHERE qq.correct_answer_id = qq.answered_id AND rm.room_id = %s "
                            "GROUP BY u.email "
                            "ORDER BY COUNT(qq.id) DESC",
                            [id_room])
-    # SELECT qq.askedUserId, COUNT(qq.id) FROM quizquestion qq WHERE qq.correctanswerId = qq.answeredId
     ranking = []
     for row in values:
         ranking.append({"email": row[0], "correct": row[1]})
-        
+
     return json.dumps({"ranking": ranking})
 
 
@@ -140,16 +139,16 @@ def finish_room():
 def status_room():
     id_room = request.args.get('id')
     # SELECT status FROM Room WHERE id = 1
-    values = db.exec_query("SELECT status FROM Room WHERE id = %s", [id_room])
+    values = db.exec_query("SELECT status FROM room WHERE id = %s", [id_room])
     return json.dumps({
-          "status": values[0][0] 
-        })
+        "status": values[0][0]
+    })
 
 
 @app.route('/getRoomQuestion')
 def get_room_question():
     id_room = request.args.get('idRoom')
-    values = db.exec_query("SELECT id, question FROM Question WHERE roomId=%s", [id_room])
+    values = db.exec_query("SELECT id, question FROM question WHERE room_id = %s", [id_room])
 
     response = []
     for val in values:
@@ -170,7 +169,7 @@ def post_room_answers():
         for a in json_data["answers"]:
             values.append((a["id"], user_id, a["text"]))
             print(values[len(values) - 1])
-        db.exec_many_query("INSERT INTO Answer (questionId, userId, answer) VALUES(%s,%s,%s)", values)
+        db.exec_many_query("INSERT INTO Answer (question_id, user_id, answer) VALUES(%s,%s,%s)", values)
         return json.dumps({"info": "Data received"})
 
 
@@ -178,78 +177,78 @@ def post_room_answers():
 def get_question():
     id_room = int(request.args.get('idRoom'))
     id_user = int(request.args.get('idUser'))
-    
-    possible_questions = db.getNonAnsweredQuestions(id_room,id_user)
-    possible_users_to_ask = db.getNonAnsweredPeople(id_room,id_user)
-    
+
+    possible_questions = db.getNonAnsweredQuestions(id_room, id_user)
+    possible_users_to_ask = db.getNonAnsweredPeople(id_room, id_user)
+
     question_id = []
     asked_about_id = []
-    
+
     if len(possible_questions) > 0:
-        question_id = random.sample(possible_questions,1)
+        question_id = random.sample(possible_questions, 1)
     else:
         possible_questions = db.getAllQuestions(id_room)
         if len(possible_questions) > 0:
-            question_id = random.sample(possible_questions,1)
+            question_id = random.sample(possible_questions, 1)
     if len(possible_users_to_ask) > 0:
-        asked_about_id = random.sample(possible_users_to_ask,1)
+        asked_about_id = random.sample(possible_users_to_ask, 1)
     else:
-        possible_users_to_ask = db.getAllDifferentPeople(id_room,id_user)
+        possible_users_to_ask = db.getAllDifferentPeople(id_room, id_user)
         if len(possible_questions) > 0:
-            asked_about_id = random.sample(possible_users_to_ask,1)
+            asked_about_id = random.sample(possible_users_to_ask, 1)
 
     if len(question_id) > 0 and 0 < len(asked_about_id):
-        quiz_question_id = db.insertQuizQuestion(id_user,asked_about_id[0],question_id[0])
+        quiz_question_id = db.insertQuizQuestion(id_user, asked_about_id[0], question_id[0])
 
-        other_users = db.getAllDifferentPeople(id_room,asked_about_id[0])
+        other_users = db.getAllDifferentPeople(id_room, asked_about_id[0])
         random.shuffle(other_users)
 
         answers = []
-        (answer_id, text_id) = db.getAnswer(question_id[0],asked_about_id[0])
+        (answer_id, text_id) = db.getAnswer(question_id[0], asked_about_id[0])
 
-        db.exec_query("UPDATE QuizQuestion SET correctanswerId=%s WHERE id = %s", [answer_id, quiz_question_id])
+        db.exec_query("UPDATE quiz_question SET correct_answer_id=%s WHERE id = %s", [answer_id, quiz_question_id])
 
-        answers.append((answer_id,text_id))
-        if min(numberOfAnswers-1 , len(other_users)) > 0:
-            for i in range( min(numberOfAnswers-1 , len(other_users) )):
-                (answer_id,text_id) = db.getAnswer(question_id[0],other_users[i])
-                answers.append((answer_id,text_id))
-        
+        answers.append((answer_id, text_id))
+        if min(numberOfAnswers - 1, len(other_users)) > 0:
+            for i in range(min(numberOfAnswers - 1, len(other_users))):
+                (answer_id, text_id) = db.getAnswer(question_id[0], other_users[i])
+                answers.append((answer_id, text_id))
+
         # if commented the first answer will be the correct one
         random.shuffle(answers)
-        
-        answer_json = []
-        for (answer_id,text_id) in answers:
-            answer_json.append({"id": answer_id ,"text":text_id})
 
-        print (quiz_question_id)
+        answer_json = []
+        for (answer_id, text_id) in answers:
+            answer_json.append({"id": answer_id, "text": text_id})
+
+        print(quiz_question_id)
         # SELECT 'question' FROM 'Question' WHERE 'id' = 3
         value = db.exec_query("SELECT id "
-                              "FROM QuizQuestion "
-                              "WHERE askedUserId=%s AND aboutUserId=%s AND questionId=%s",
+                              "FROM quiz_question "
+                              "WHERE asked_user_id = %s AND about_user_id = %s AND question_id = %s",
                               [id_user, asked_about_id[0], question_id[0]])
         quiz_question_id = value[0][0]
 
         value = db.exec_query("SELECT q.question "
-                              "FROM Question q "
+                              "FROM question q "
                               "WHERE q.id = %s",
                               [question_id[0]])
 
         question_text = value[0][0]
 
         value = db.exec_query("SELECT u.email "
-                              "FROM Users u "
+                              "FROM users u "
                               "WHERE u.id=%s",
                               [asked_about_id[0]])
         user_name = value[0][0]
 
         question_text = "What did " + user_name + " answer to '" + question_text + "' ?"
-        
+
         return json.dumps({
-              "id": quiz_question_id,
-              "question": question_text,
-              "answers": answer_json
-            })
+            "id": quiz_question_id,
+            "question": question_text,
+            "answers": answer_json
+        })
     else:
         return json.dumps({"error": "Not available questions for this user in this room"})
 
@@ -259,21 +258,21 @@ def post_answer():
     quiz_question_id = request.args.get('quizQuestionId')
     answer_id = request.args.get('answerId')
 
-    db.exec_query("UPDATE QuizQuestion SET answeredId = %s WHERE id = %s", [answer_id, quiz_question_id])
+    db.exec_query("UPDATE quiz_question SET answered_id = %s WHERE id = %s", [answer_id, quiz_question_id])
 
-    value = db.exec_query("SELECT qq.answeredId, qq.correctanswerId, qq.questionId  "
-                          "FROM QuizQuestion qq "
+    value = db.exec_query("SELECT qq.answered_id, qq.correct_answer_id, qq.question_id  "
+                          "FROM quiz_question qq "
                           "WHERE qq.id = %s", [quiz_question_id])
 
     answered_id = value[0][0]
     correct_answer_id = value[0][1]
     question_id = value[0][2]
 
-    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s ", [correct_answer_id] )
+    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s ", [correct_answer_id])
 
     if len(value) > 0:
         text = value[0][0]
-    else :
+    else:
         text = "something when wrong"
 
     # update UPDATE QuizQuestion SET answeredId=5 WHERE id = 1
@@ -281,10 +280,11 @@ def post_answer():
     if value is None:
         return json.dumps({"error": "Internal server error"})
     return json.dumps({
-          "correct": answered_id == correct_answer_id,
-          "question": question_id,
-          "correctAnswer": {"id": correct_answer_id, "text": text}
-        })
+        "correct": answered_id == correct_answer_id,
+        "question": question_id,
+        "correctAnswer": {"id": correct_answer_id, "text": text}
+    })
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', threaded=True)

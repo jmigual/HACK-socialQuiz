@@ -1,55 +1,55 @@
-CREATE TABLE Users
+CREATE TABLE users
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
 	email TEXT,
-    name TEXT
+  name TEXT
 );	
 
-CREATE TABLE Room
+CREATE TABLE room
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	creator INT NOT NULL REFERENCES Users(id) ,
-	timeLimit TIMESTAMP,
-	questionLimit INT,
+	creator INT NOT NULL REFERENCES users(id) ,
+	time_limit TIMESTAMP,
+	question_limit INT,
 	status ENUM('waiting', 'started', 'finished', 'closed') DEFAULT 'waiting'
 );
 
-CREATE TABLE RoomMembers
+CREATE TABLE room_members
 (
 
-	roomId INT REFERENCES Room(id),
-	userId INT REFERENCES Users(id),
-	PRIMARY KEY(roomId, userId)
+	room_id INT REFERENCES room(id),
+	user_id INT REFERENCES users(id),
+	PRIMARY KEY(room_id, user_id)
 );
 
-CREATE TABLE Question
+CREATE TABLE question
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	roomId INT REFERENCES Room(id),
+	room_id INT REFERENCES room(id),
 	question TEXT
 );
 
-CREATE TABLE Answer
+CREATE TABLE answer
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	questionId INT REFERENCES Question(id),
-	userId INT REFERENCES Users(id),
+	question_id INT REFERENCES question (id),
+	user_id INT REFERENCES users (id),
 	answer TEXT
 );
 
-CREATE TABLE QuizQuestion
+CREATE TABLE quiz_question
 (
 	id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-	askedUserId INT REFERENCES Users(id),
-	aboutUserId INT REFERENCES Users(id),
-	questionId INT REFERENCES Room(id),
-	correctAnswerId INT REFERENCES Answer(id),
-	answeredId INT REFERENCES Answer(id)
+	asked_user_id INT REFERENCES users (id),
+	about_user_id INT REFERENCES users (id),
+	question_id INT REFERENCES room (id),
+	correct_answer_id INT REFERENCES answer (id),
+	answered_id INT REFERENCES answer (id)
 );
 
-CREATE TABLE QuizPossibleAnswer
+CREATE TABLE quiz_possible_answer
 (
-	quizId INT REFERENCES QuizQuestion(id),
-	answerId INT REFERENCES Answer(id),
-	PRIMARY KEY(quizId, answerId)
+	quiz_id INT REFERENCES quiz_question (id),
+	answer_id INT REFERENCES answer (id),
+	PRIMARY KEY(quiz_id, answer_id)
 );
