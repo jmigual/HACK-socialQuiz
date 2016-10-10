@@ -170,7 +170,7 @@ def post_room_answers():
         for a in json_data["answers"]:
             values.append((a["id"], user_id, a["text"]))
             print(values[len(values) - 1])
-        db.exec_many_query("INSERT INTO Answer (question_id, user_id, answer) VALUES(%s,%s,%s)", values)
+        db.exec_many_query("INSERT INTO answer (question_id, user_id, answer) VALUES(%s,%s,%s)", values)
         return json.dumps({"info": "Data received"})
 
 
@@ -179,8 +179,8 @@ def get_question():
     id_room = int(request.args.get('idRoom'))
     id_user = int(request.args.get('idUser'))
 
-    possible_questions = db.getNonAnsweredQuestions(id_room, id_user)
-    possible_users_to_ask = db.getNonAnsweredPeople(id_room, id_user)
+    possible_questions = db.get_non_answered_questions(id_room, id_user)
+    possible_users_to_ask = db.get_non_answered_people(id_room, id_user)
 
     question_id = []
     asked_about_id = []
@@ -188,31 +188,31 @@ def get_question():
     if len(possible_questions) > 0:
         question_id = random.sample(possible_questions, 1)
     else:
-        possible_questions = db.getAllQuestions(id_room)
+        possible_questions = db.get_all_questions(id_room)
         if len(possible_questions) > 0:
             question_id = random.sample(possible_questions, 1)
     if len(possible_users_to_ask) > 0:
         asked_about_id = random.sample(possible_users_to_ask, 1)
     else:
-        possible_users_to_ask = db.getAllDifferentPeople(id_room, id_user)
+        possible_users_to_ask = db.get_all_different_people(id_room, id_user)
         if len(possible_questions) > 0:
             asked_about_id = random.sample(possible_users_to_ask, 1)
 
     if len(question_id) > 0 and 0 < len(asked_about_id):
-        quiz_question_id = db.insertQuizQuestion(id_user, asked_about_id[0], question_id[0])
+        quiz_question_id = db.insert_quiz_question(id_user, asked_about_id[0], question_id[0])
 
-        other_users = db.getAllDifferentPeople(id_room, asked_about_id[0])
+        other_users = db.get_all_different_people(id_room, asked_about_id[0])
         random.shuffle(other_users)
 
         answers = []
-        (answer_id, text_id) = db.getAnswer(question_id[0], asked_about_id[0])
+        (answer_id, text_id) = db.get_answer(question_id[0], asked_about_id[0])
 
         db.exec_query("UPDATE quiz_question SET correct_answer_id=%s WHERE id = %s", [answer_id, quiz_question_id])
 
         answers.append((answer_id, text_id))
         if min(numberOfAnswers - 1, len(other_users)) > 0:
             for i in range(min(numberOfAnswers - 1, len(other_users))):
-                (answer_id, text_id) = db.getAnswer(question_id[0], other_users[i])
+                (answer_id, text_id) = db.get_answer(question_id[0], other_users[i])
                 answers.append((answer_id, text_id))
 
         # if commented the first answer will be the correct one
@@ -246,9 +246,9 @@ def get_question():
         question_text = "What did " + user_name + " answer to '" + question_text + "' ?"
 
         return json.dumps({
-            "id": quiz_question_id,
+            "id":       quiz_question_id,
             "question": question_text,
-            "answers": answer_json
+            "answers":  answer_json
         })
     else:
         return json.dumps({"error": "Not available questions for this user in this room"})
@@ -281,8 +281,8 @@ def post_answer():
     if value is None:
         return json.dumps({"error": "Internal server error"})
     return json.dumps({
-        "correct": answered_id == correct_answer_id,
-        "question": question_id,
+        "correct":       answered_id == correct_answer_id,
+        "question":      question_id,
         "correctAnswer": {"id": correct_answer_id, "text": text}
     })
 
