@@ -1,13 +1,22 @@
 import pymysql
+import json
 
-DB_HOST = 'localhost'
-DB_USER = 'socialuser'
-DB_PASS = '12345678'
-DB_NAME = 'social_quiz'
+
+class Credentials:
+    __json_credentials = None
+
+    @classmethod
+    def get_credentials(cls):
+        if cls.__json_credentials is None:
+            f = open('credentials.json', 'r')
+            cls.__json_credentials = json.load(f)
+        return cls.__json_credentials
 
 
 def get_connection():
-    return pymysql.connect(host=DB_HOST, user=DB_USER, password=DB_PASS, db=DB_NAME)
+    cred = Credentials.get_credentials()
+    print("Cred: %s" % cred)
+    return pymysql.connect(host=cred["host"], user=cred["user"], password=cred["password"], db=cred["db"])
 
 
 def run_query(query=''):
