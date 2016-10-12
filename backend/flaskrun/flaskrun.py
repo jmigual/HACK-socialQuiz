@@ -13,9 +13,12 @@ def flask_run(app, host='0.0.0.0', port=5000, threaded=False, debug=False):
             host = a
         elif o in ("-p", "--port"):
             port = a
+        elif o in ("-t", "--threaded"):
+            threaded=True
+
     print("Started execution of Social Quiz")
     print("Debug: %s" % debug)
     print("Host: %s:%s" % (host, port))
     print("Threaded: %s" % debug)
 
-    app.run(debug=debug, host=host, port=port, threaded=True)
+    app.run(debug=debug, host=host, port=port, threaded=threaded)
