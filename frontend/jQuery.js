@@ -10,6 +10,25 @@ function getUrlVars() {
 var server = "http://interact.siliconpeople.net:5000"
 //var server = "http://localhost:5000";
 
+// To encode URI
+function encodeURI(jsonData) {
+	var ret = [];
+	for (var d in jsonData) {
+		ret.push(encodeURIComponent(d)+"=" +encodeURIComponent(jsonData[d]));
+	}
+	return ret.join("&");
+}
+
+// Useful to get a json already parsed, if the third argument is given the query is encoded with encodeURI
+function getJson(urlQuery, callback, jsonData) {
+	if (arguments.length == 3) {
+		urlQuery += encodeURI(jsonData);
+	}
+	$.get(urlQuery, function(data) {
+		callback(JSON.parse(data));
+	});
+}
+
 var urlVars=getUrlVars();
 var hasError = false;
 if ("id" in urlVars){
