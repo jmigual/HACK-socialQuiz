@@ -29,6 +29,11 @@ function getJson(urlQuery, callback, jsonData) {
     });
 }
 
+// To get a json from the server
+function getServerJson(urlQuery, callback, jsonData) {
+    getJson(server + urlQuery, callback, jsonData);
+}
+
 function createButton() {
     var b = document.createElement("button");
     $(b).attr("type", "button");
@@ -39,7 +44,7 @@ function createButton() {
 var urlVars = getUrlVars();
 var hasError = false;
 if ("id" in urlVars) {
-    getJson(`${server}/status_room`, function (reply) {
+    getServerJson("/room_status", function (reply) {
         switch (reply.status) {
             case "started":
             case "waiting":
@@ -64,7 +69,7 @@ $(document).ready(function () {
         var emailInput = $("#emailInput");
         var email = emailInput.val();
         emailInput.fadeOut();
-        getJson(`${server}/get_user_id`, function (json) {
+        getServerJson("/get_user_id", function (json) {
             var userID = json.id;
             emailInput.off("keypress");
             endEmail(userID, email);
@@ -79,7 +84,7 @@ function endEmail(userID, email) {
         var roomID = urlVars["id"];
         $.get(`${server}/join_room?${encodeURI({"id_room": roomID, "email": email})}`);
 
-        getJson(`${server}/status_room`, function (reply) {
+        getServerJson("/room_status", function (reply) {
             if (reply.status == "waiting") {
                 startQuestions(userID, roomID)
             }
@@ -98,11 +103,11 @@ function startQuestions(userID, roomID) {
     $("#questionContainer").fadeIn();
 
     //shitty way to do this
-    getJson(`${server}/get_room_question`, function (reply) {
+    getServerJson("/get_room_questions", function (reply) {
         var questions = reply.questions;
         var answers = [];
         setQuestions(userID, roomID, questions, answers, 0);
-    }, {"room_id": roomID, "user_id": userID});
+    }, {"room_id": roomID});
 }
 
 function setQuestions(userID, roomID, questions, answers, i) {
@@ -145,7 +150,7 @@ function startAdmin(userID) {
     });
     $("#checkboxContainer").empty();
 
-    getJson(server + "/get_rooms", function (rooms) {
+    getServerJson("/get_rooms", function (rooms) {
         //console.log(rooms);
         for (var i in rooms) {
             var r = rooms[i];
@@ -177,7 +182,7 @@ function startAdmin(userID) {
                         startAdmin(userID);
                     });
                 } else if (status == "started") {
-                    getJson(server + "/finish_room", function (reply) {
+                    getServerJson("/finish_room", function (reply) {
                         var ranking = reply.ranking;
                         console.log(ranking);
 
@@ -212,7 +217,7 @@ function newRoom(userID) {
 
     var finishRoom = $("#finishRoom");
     finishRoom.click(function () {
-        getJson(server + "/create_room", function (reply) {
+        getServerJson("/create_room", function (reply) {
             var roomID = reply.id;
             $.ajax({
                 url: server + "/fill_room",
@@ -251,7 +256,7 @@ function newRoom(userID) {
 }
 
 function startQuiz(userID, roomID) {
-    getJson(server + "/get_quiz_question", function (serverReply) {
+    getServerJson("/get_quiz_question", function (serverReply) {
         if (serverReply.error != null) {
             $("#quizQuestionText").text(serverReply.error);
             console.log("Error: " + serverReply.error);
@@ -276,7 +281,7 @@ function startQuiz(userID, roomID) {
 
 function answerQuiz(questionID, answerID, userID, roomID) {
     $("#quizAnswerColumn").empty();
-    getJson(server + "post_quiz_answer", function (serverReply) {
+    getServerJson("post_quiz_answer", function (serverReply) {
         console.log(serverReply);
         if (serverReply.correct) {
             alert("Correct answer");
