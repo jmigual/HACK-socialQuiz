@@ -59,9 +59,8 @@ $(document).ready(function(){
 		var emailInput = $("#emailInput");
 		var email = emailInput.val();
 		emailInput.fadeOut();
-		$.get(server + "/getUserId?email="+email,function(data){
-			var serverReply = JSON.parse(data);
-			var userID = serverReply.id;
+		getJson(server + `/get_user_id?email=${email}`, function(json) {
+			var userID = json.id;
 			emailInput.off("keypress");
 			endEmail(userID, email);
 		});
@@ -73,10 +72,9 @@ function endEmail(userID,email){
 	urlVars=getUrlVars();
 	if ("id" in urlVars){
 		var roomID = urlVars["id"];
-		$.get(server + "/joinRoom?idRoom="+roomID+"&email="+email);
-		$.get(server+"/statusRoom?id="+roomID,function(data){
-			serverReply=JSON.parse(data);
-			if (serverReply.status== "waiting"){
+		$.get(`${server}/join_room?id_room=${roomID}&email=${email}`);
+		getJson(`${server}/statusRoom?id=${roomID}`, function(json) {
+			if (json.status== "waiting"){
 				startQuestions(userID,roomID)
 			}
 			else{
@@ -96,8 +94,8 @@ function startQuestions(userID, roomID){
 	$("#questionContainer").fadeIn();
 	//shitty way to do this
 	$.get(server+"/getRoomQuestion?idRoom="+roomID+"&idUser="+userID, function(data){
-		serverReply=JSON.parse(data);
-		questions=serverReply.questions;
+		var serverReply=JSON.parse(data);
+		questions = serverReply.questions;
 		var answers=[];
 		setQuestions(userID,roomID,questions,answers,0);
 	});
