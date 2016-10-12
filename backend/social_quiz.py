@@ -3,14 +3,18 @@
 import json
 import os.path
 import random
+import re
 
 from flask import Flask, send_from_directory
-from flask import request
+from flask import request, abort
 
 from flaskrun.flaskrun import flask_run
 import datab.social_database as db
 
 app = Flask(__name__)
+
+# Regular expression to only accept certain files
+fileChecker = re.compile(r"(.*\.js|.*\.html|.*\.png)$")
 numberOfAnswers = 4
 
 random.seed(7)
@@ -27,7 +31,9 @@ def root():
 
 @app.route('/<path:filename>')
 def index(filename):
-    return send_from_directory(os.path.join(root_dir(), 'static'), filename)
+    if fileChecker.match(filename):
+        return send_from_directory(os.path.join(root_dir(), 'static'), filename)
+    abort(403)
 
 
 @app.route('/register')
