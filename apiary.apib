@@ -75,7 +75,26 @@ Join an existing room
             {
                 "id": 12345678
             }
+
+## Get Rooms [/get_rooms{?user_id}]
+
+Get the rooms that a user has created
+
+### Get rooms [GET]
+
++ Parameters
+    + user_id (number, required) - User id
+    
++ Response 200 (application/json)
+    + Attributes
+        + rooms (array[number]) - List containing all the user's rooms.
+        
+    + Body
             
+            {
+                "rooms": [123, 124, 125]
+            }
+
 ## Group Room
 
 Room related options
@@ -118,30 +137,40 @@ To know if a certain user has answered a room
                 "answered": false
             }
 
-## Get Rooms [/get_rooms{?user_id}]
 
-Get the rooms that a user has created
+## Room status [/room_status{?room_id}]
 
-### Get rooms [GET]
+To get the status of a certain room
+
+### Room status [GET]
 
 + Parameters
-    + user_id (number, required) - User id
+    + room_id (number, required) - Room Id to check the status
     
 + Response 200 (application/json)
+
     + Attributes
-        + rooms (array[number]) - List containing all the user's rooms.
+        + status (enum[string], required) 
         
+            Current room's status
+            
+            + Members
+                + waiting
+                + started
+                + finished
+                + closed
     + Body
-            
+        
             {
-                "rooms": [123, 124, 125]
+                "status": "finished"
             }
-            
+
 
 ## Add questions [/fill_room]
 
-### Fill Room [POST]
+Add questions to the selected room to be answered by the other users
 
+### Fill Room [POST]
 
 + Request (application/json)
 
@@ -164,6 +193,21 @@ Get the rooms that a user has created
         
 ## Group Managing Room
 
+## Open Room [/open_room{?room_id}]
+
+Opens a room to allow other users to answer quizes
+
+### Open room [GET]
+
++ Parameters
+    + room_id (number, required) - Room id to be opened
+    
++ Response 200 (application/json)
+        
+        {
+            "info": "The room has been opened successfully",
+            "status": "started"
+        }
 
 ## Close Room [/close_room{?room_id}]
 
@@ -201,39 +245,13 @@ Prevents the users from answering more quizzes and returns the ranking
                 "ranking": [{"email": "hello@g.com", "correct": 15}]
             }
 
-## Room status [/status_room{?room_id}]
-
-To get the status of a certain room
-
-### Room status [GET]
-
-+ Parameters
-    + room_id (number, required) - Room Id to check the status
-    
-+ Response 200 (application/json)
-
-    + Attributes
-        + status (enum[string], required) 
-        
-            Current room's status
-            
-            + Members
-                + waiting
-                + started
-                + finished
-    + Body
-        
-            {
-                "status": "finnished"
-            }
-
 ## Group Room questions
 
-## Get Room Question [/get_room_question{?room_id}]
+## Get Room Questions [/get_room_questionsx{?room_id}]
 
-To obtain a new question to be answered by the user
+To obtain all the questions to be answered by the user
 
-### Get Room Question [GET]
+### Get Room Questions [GET]
 
 + Parameters
     + room_id (number, required) - Room id to get the questions
