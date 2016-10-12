@@ -7,9 +7,8 @@ function getUrlVars() {
     return vars;
 }
 
-
-//var server = "http://interact.siliconpeople.net:5000";
-var server = "http://localhost:5000";
+// Regular expression to always match the proper server
+var server = window.location.href.replace(/[?&]+.*/g, "").replace(/\/$/g, "");
 
 // To encode URI
 function encodeURI(jsonData) {
