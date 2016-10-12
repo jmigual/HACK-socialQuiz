@@ -1,296 +1,290 @@
 function getUrlVars() {
-	var vars = {};
-	var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
-		vars[key] = value;
-	});
-	return vars;
+    var vars = {};
+    window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (m, key, value) {
+        console.log(m, key, value);
+        vars[key] = value;
+    });
+    return vars;
 }
 
 
-var server = "http://interact.siliconpeople.net:5000"
-//var server = "http://localhost:5000";
+//var server = "http://interact.siliconpeople.net:5000";
+var server = "http://localhost:5000";
 
 // To encode URI
 function encodeURI(jsonData) {
-	var ret = [];
-	for (var d in jsonData) {
-		ret.push(encodeURIComponent(d)+"=" +encodeURIComponent(jsonData[d]));
-	}
-	return ret.join("&");
+    var ret = ["?"];
+    for (var d in jsonData) {
+        ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(jsonData[d]));
+    }
+    return ret.join("&");
 }
 
 // Useful to get a json already parsed, if the third argument is given the query is encoded with encodeURI
 function getJson(urlQuery, callback, jsonData) {
-	if (arguments.length == 3) {
-		urlQuery += encodeURI(jsonData);
-	}
-	$.get(urlQuery, function(data) {
-		callback(JSON.parse(data));
-	});
+    if (arguments.length == 3) {
+        urlQuery += encodeURI(jsonData);
+    }
+    $.get(urlQuery, function (data) {
+        callback(JSON.parse(data));
+    });
 }
 
-var urlVars=getUrlVars();
+function createButton() {
+    var b = document.createElement("button");
+    $(b).attr("type", "button");
+    $(b).addClass("btn btn-default");
+    return b;
+}
+
+var urlVars = getUrlVars();
 var hasError = false;
-if ("id" in urlVars){
-	var roomID = urlVars["id"];
-	$.get(server+"/statusRoom?id="+roomID,function(data){
-		var serverReply=JSON.parse(data);
-		switch (serverReply.status) {
-			case "started":
-			case "waiting":
-				break;
-			default:
-				hasError = true;
-		}
-	});
+if ("id" in urlVars) {
+    getJson(`${server}/status_room`, function (reply) {
+        switch (reply.status) {
+            case "started":
+            case "waiting":
+                break;
+            default:
+                hasError = true;
+        }
+    }, {"room_id": urlVars["id"]});
 }
 
-$(document).ready(function(){
-	var emailInput = $("#emailInput");
-	if (hasError) {
-		$("#emailContainer").hide();
-		$("#errorContainer").show();
-		return;
-	} else {
-		emailInput.focus();
-	}
-	emailInput.keypress(function(e) {
-		if (e.which != 13) return;
-		var emailInput = $("#emailInput");
-		var email = emailInput.val();
-		emailInput.fadeOut();
-		getJson(server + `/get_user_id?email=${email}`, function(json) {
-			var userID = json.id;
-			emailInput.off("keypress");
-			endEmail(userID, email);
-		});
-	});
+$(document).ready(function () {
+    var emailInput = $("#emailInput");
+    if (hasError) {
+        $("#emailContainer").hide();
+        $("#errorContainer").show();
+        return;
+    } else {
+        emailInput.focus();
+    }
+    emailInput.keypress(function (e) {
+        if (e.which != 13) return;
+        var emailInput = $("#emailInput");
+        var email = emailInput.val();
+        emailInput.fadeOut();
+        getJson(`${server}/get_user_id`, function (json) {
+            var userID = json.id;
+            emailInput.off("keypress");
+            endEmail(userID, email);
+        }, {"email": email});
+    });
 });
 
-function endEmail(userID,email){
-	$("#emailContainer").fadeOut();
-	urlVars=getUrlVars();
-	if ("id" in urlVars){
-		var roomID = urlVars["id"];
-		$.get(`${server}/join_room?id_room=${roomID}&email=${email}`);
-		getJson(`${server}/statusRoom?id=${roomID}`, function(json) {
-			if (json.status== "waiting"){
-				startQuestions(userID,roomID)
-			}
-			else{
-				$("#quizQuestionContainer").fadeIn();
-				startQuiz(userID,roomID)
-			}
-		});
-	}
-	else{
-		startAdmin(userID);
-	}
+function endEmail(userID, email) {
+    $("#emailContainer").fadeOut();
+    urlVars = getUrlVars();
+    if ("id" in urlVars) {
+        var roomID = urlVars["id"];
+        $.get(`${server}/join_room?${encodeURI({"id_room": roomID, "email": email})}`);
+
+        getJson(`${server}/status_room`, function (reply) {
+            if (reply.status == "waiting") {
+                startQuestions(userID, roomID)
+            }
+            else {
+                $("#quizQuestionContainer").fadeIn();
+                startQuiz(userID, roomID)
+            }
+        }, {"room_id": roomID});
+    }
+    else {
+        startAdmin(userID);
+    }
 }
 
-function startQuestions(userID, roomID){
-	var questions;
+function startQuestions(userID, roomID) {
+    $("#questionContainer").fadeIn();
 
-	$("#questionContainer").fadeIn();
-	//shitty way to do this
-	$.get(server+"/getRoomQuestion?idRoom="+roomID+"&idUser="+userID, function(data){
-		var serverReply=JSON.parse(data);
-		questions = serverReply.questions;
-		var answers=[];
-		setQuestions(userID,roomID,questions,answers,0);
-	});
+    //shitty way to do this
+    getJson(`${server}/get_room_question`, function (reply) {
+        var questions = reply.questions;
+        var answers = [];
+        setQuestions(userID, roomID, questions, answers, 0);
+    }, {"room_id": roomID, "user_id": userID});
 }
 
-function setQuestions(userID,roomID,questions,answers,i){
-	$("#answerInput").val("").focus();
-	if (i==questions.length){
-		$.ajax({
-            url:server+"/postRoomAnswers",
-            data:JSON.stringify({
-				idRoom:roomID,
-				idUser:userID,
-				answers:answers
-			}),
-			contentType:"application/json; charset=utf-8",
-			type:"POST"
-		});
-		$("#questionContainer").fadeOut();
-		$("#thanksContainer").fadeIn();
-	}
-	else{
-		$("#questionText").text(questions[i].text);
-		$(document).keypress(function(e){
-			if (e.which==13){
-				answers[i]={
-					id:questions[i].id,
-					text:$("#answerInput").val()
-				};
-				$(document).off("keypress");
-				setQuestions(userID,roomID,questions,answers,i+1);
-			}
-		});
-	}
+function setQuestions(userID, roomID, questions, answers, i) {
+    $("#answerInput").val("").focus();
+    if (i == questions.length) {
+        $.ajax({
+            url: server + "/post_room_answers",
+            data: JSON.stringify({
+                "room_id": roomID,
+                "user_id": userID,
+                "answers": answers
+            }),
+            contentType: "application/json; charset=utf-8",
+            type: "POST"
+        });
+        $("#questionContainer").fadeOut();
+        $("#thanksContainer").fadeIn();
+    }
+    else {
+        $("#questionText").text(questions[i].text);
+        $(document).keypress(function (e) {
+            if (e.which == 13) {
+                answers[i] = {
+                    id: questions[i].id,
+                    text: $("#answerInput").val()
+                };
+                $(document).off("keypress");
+                setQuestions(userID, roomID, questions, answers, i + 1);
+            }
+        });
+    }
 }
 
-function openRoom() {
+function startAdmin(userID) {
+    $("#adminContainer").fadeIn();
+    var newRoom = $("#newRoom");
+    newRoom.off("click");
+    newRoom.click(function () {
+        newRoom(userID)
+    });
+    $("#checkboxContainer").empty();
 
-}
+    getJson(server + "/get_rooms", function (rooms) {
+        //console.log(rooms);
+        for (var i in rooms) {
+            var r = rooms[i];
 
-function startAdmin(userID){
-	$("#adminContainer").fadeIn();
-	$("#newRoom").off("click");
-	$("#newRoom").click(function(){newRoom(userID)});
-	$("#checkboxContainer").empty();
+            var text;
+            if (r.status == "waiting") text = "START";
+            else if (r.status == "started") text = "FINISH";
+            else if (r.status == "finished") text = "FINISHED";
+            var par = document.createElement("p");
+            $(par).html(`Room #<b>${r.id}</b> status: ${r.status}`);
+            $(par).css({"display": "inline", "color": "white"});
 
-	$.get(server+"/getRooms?userId="+userID, function(data){
-		var rooms = JSON.parse(data);
-		//console.log(rooms);
-		//for(var r in rooms) {
-		for (var i in rooms) {
-			var r = rooms[i];
-
-			var text;
-			if (r.status == "waiting") text = "START";
-			else if (r.status == "started") text = "FINISH";
-			else if (r.status == "finished") text = "FINISHED";
-			var par = document.createElement("p");
-			$(par).html(`Room #<b>${r.id}</b> status: ${r.status}`);
-			$(par).css({"display": "inline", "color": "white"});
-
-			var button = '';
-			if(r.status != 'finished'){
-				button = document.createElement("button");
-	            $(button).attr("type", "button");
-	            $(button).addClass("btn btn-default");
-	            $(button).attr('id', "RoomButton" + r.id);
-	            $(button).attr('dbid', r.id);
-	            $(button).attr('status', r.status);
-	            $(button).html(text);
-        	}
+            var button = '';
+            if (r.status != 'finished') {
+                button = createButton();
+                $(button).attr('id', "RoomButton" + r.id);
+                $(button).attr('dbid', r.id);
+                $(button).attr('status', r.status);
+                $(button).html(text);
+            }
 
 
-			$("#checkboxContainer").append(par, button,'<br>');
-			$(button).click(function(){
-				var id = $(this).attr("dbid");
+            $("#checkboxContainer").append(par, button, '<br>');
+            $(button).click(function () {
+                var roomId = $(this).attr("dbid");
                 var status = $(this).attr('status');
                 if (status == "waiting") {
-                    $.get(server + `/openRoom?id=${id}`, function () {
+                    $.get(server + `/openRoom?id=${roomId}`, function () {
                         startAdmin(userID);
                     });
                 } else if (status == "started") {
-                    $.get(server + `/finishRoom?id=${id}`, function (data) {
-                    	serverReply = JSON.parse(data);
-                    	ranking=serverReply.ranking;
-                    	console.log(ranking);
+                    getJson(server + "/finish_room", function (reply) {
+                        var ranking = reply.ranking;
+                        console.log(ranking);
 
-                    	var text="<table class='table table-striped'><thead><tr><th>Name</th><th>Score</th></tr></thead><tbody>";
-						$.each(ranking,function(i,value){
-							text=text+`<tr><td>${value.email}</td><td>${value.correct}</td></tr>`;
-						});
-						text=text+"</tbody></table>";
-						$("#modal-title").text("Ranking");
-						$("#urlModalText").html(text);
-						$("#urlModal").modal();
-						startAdmin(userID);
-                    });
+                        var text = "<table class='table table-striped'><thead><tr><th>Name</th><th>Score</th></tr></thead><tbody>";
+                        $.each(ranking, function (i, value) {
+                            text = text + `<tr><td>${value.email}</td><td>${value.correct}</td></tr>`;
+                        });
+                        text = text + "</tbody></table>";
+                        $("#modal-title").text("Ranking");
+                        $("#urlModalText").html(text);
+                        $("#urlModal").modal();
+                        startAdmin(userID);
+                    }, {"room_id": roomId});
                 }
-				$(this).off("click");
-			});
-		}
-	});
+                $(this).off("click");
+            });
+        }
+    }, {"user_id": userID});
 }
 
-function newRoom(userID){
-	$("#adminContainer").fadeOut();
-	$("#newRoomContainer").fadeIn();
-	var newQuestions = [];
+function newRoom(userID) {
+    $("#adminContainer").fadeOut();
+    $("#newRoomContainer").fadeIn();
+    var newQuestions = [];
 
-	var questionInput = $("#questionInput");
-	questionInput.keypress(function(e){
-		if (e.which != 13)  return;
-		newQuestions.push(questionInput.val());
-		questionInput.val("");
-	});
+    var questionInput = $("#questionInput");
+    questionInput.keypress(function (e) {
+        if (e.which != 13)  return;
+        newQuestions.push(questionInput.val());
+        questionInput.val("");
+    });
 
-	var finishRoom = $("#finishRoom");
-	finishRoom.click(function(){
-		$.get(server+"/createRoom?userId="+userID,function(data){
-			var serverReply = JSON.parse(data);
-			var roomID = serverReply.id;
-			$.ajax({
-	            url:server+"/fillRoom",
-	            data:JSON.stringify({
-	            	id: roomID,
-					question: newQuestions
-				}),
-				contentType:"application/json; charset=utf-8",
-				type:"POST"
-			});
+    var finishRoom = $("#finishRoom");
+    finishRoom.click(function () {
+        getJson(server + "/create_room", function (reply) {
+            var roomID = reply.id;
+            $.ajax({
+                url: server + "/fill_room",
+                data: JSON.stringify({
+                    room_id: roomID,
+                    question: newQuestions
+                }),
+                contentType: "application/json; charset=utf-8",
+                type: "POST"
+            });
 
-			$("#questionInput").val("");
-			questionInput.off("keypress");
-			finishRoom.off("click");
-			$("#cancelRoom").off("click");
-			$("#newRoomContainer").fadeOut();
-			startAdmin(userID);
-			//alert(roomID);
+            $("#questionInput").val("");
+            questionInput.off("keypress");
+            finishRoom.off("click");
+            $("#cancelRoom").off("click");
+            $("#newRoomContainer").fadeOut();
+            startAdmin(userID);
+            //alert(roomID);
 
-			var link = window.location.href + "?id=" + roomID;
+            var link = window.location.href + "?id=" + roomID;
 
-			$("#modal-title").text("Generated URL");
-			$("#urlModalText").html("<a href='" + link + "'>" + link + "</a>");
-			$("#urlModal").modal();
-		});
-	});
-	$("#cancelRoom").click(function(){
-			$("#questionInput").val("");
-			$(document).off("keypress");
-			$("#finishRoom").off("click");
-			$("#cancelRoom").off("click");
-			$("#newRoomContainer").fadeOut();
-			$("#adminContainer").fadeIn();
-	});
-
-}
-
-function startQuiz(userID, roomID){
-
-	var buttonPre="<button type='button' style='width: 100%' class='btn btn-default' id='";
-	var buttonMid="'>";
-	var buttonPost="</button>";
-	$.get(server+"/getQuizQuestion?idRoom="+roomID+"&idUser="+userID,function(data){
-		console.log(data);
-		var serverReply=JSON.parse(data);
-		if (serverReply.error != null) {
-			$("#quizQuestionText").text(serverReply.error);
-			console.log("Error: " + serverReply.error);
-			return;
-		}
-
-		var quizQuestionID=serverReply.id;
-		var quizQuestionText=serverReply.question;
-		var quizAnswers=serverReply.answers;
-		$("#quizQuestionText").text(quizQuestionText);
-		$.each(quizAnswers,function(i,value){
-			$("#quizAnswerColumn").append(buttonPre+value.id+buttonMid+value.text+buttonPost)
-			$("#"+value.id).click(function(){answerQuiz(quizQuestionID,value.id,userID,roomID)});
-		});
-	});
-
+            $("#modal-title").text("Generated URL");
+            $("#urlModalText").html("<a href='" + link + "'>" + link + "</a>");
+            $("#urlModal").modal();
+        }, {user_id: userID});
+    });
+    $("#cancelRoom").click(function () {
+        $("#questionInput").val("");
+        $(document).off("keypress");
+        $("#finishRoom").off("click");
+        $("#cancelRoom").off("click");
+        $("#newRoomContainer").fadeOut();
+        $("#adminContainer").fadeIn();
+    });
 
 }
 
-function answerQuiz(questionID,answerID,userID,roomID){
-	$("#quizAnswerColumn").empty();
-	$.get(server+"/postAnswer?quizQuestionId="+questionID+"&answerId="+answerID,function(data){
-		serverReply=JSON.parse(data);
-		console.log(serverReply);
-		if (serverReply.correct){
-			alert("Correct answer");
-		}
-		else{
-			alert("Incorrect answer\n the right answer was: "+serverReply.correctAnswer.text);
-		}
-		startQuiz(userID,roomID);
-	});
+function startQuiz(userID, roomID) {
+    getJson(server + "/get_quiz_question", function (serverReply) {
+        if (serverReply.error != null) {
+            $("#quizQuestionText").text(serverReply.error);
+            console.log("Error: " + serverReply.error);
+            return;
+        }
+
+        var quizQuestionID = serverReply.id;
+        var quizAnswers = serverReply.answers;
+        $("#quizQuestionText").text(serverReply.question);
+        $.each(quizAnswers, function (i, value) {
+            var button = createButton();
+            $(button).attr("id", "answerButton" + value.id);
+            $(button).text(value.text);
+            $(button).css({width: "100%"});
+            $("#quizAnswerColumn").append(button);
+            $("#answerButton" + value.id).click(function () {
+                answerQuiz(quizQuestionID, value.id, userID, roomID)
+            });
+        });
+    }, {room_id: roomID, user_id: userID});
+}
+
+function answerQuiz(questionID, answerID, userID, roomID) {
+    $("#quizAnswerColumn").empty();
+    getJson(server + "post_quiz_answer", function (serverReply) {
+        console.log(serverReply);
+        if (serverReply.correct) {
+            alert("Correct answer");
+        }
+        else {
+            alert("Incorrect answer\n the right answer was: " + serverReply.correctAnswer.text);
+        }
+        startQuiz(userID, roomID);
+    }, {quiz_question_id: questionID, quiz_answer_id: answerID});
 }
