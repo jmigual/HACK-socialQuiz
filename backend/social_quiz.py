@@ -14,7 +14,7 @@ import datab.social_database as db
 app = Flask(__name__)
 
 # Regular expression to only accept certain files
-fileChecker = re.compile(r"(.*\.js|.*\.html|.*\.png)$")
+fileChecker = re.compile(r"(.*\.js|.*\.html|.*\.png|.*\.css|.*\.map)$")
 numberOfAnswers = 4
 
 random.seed(7)
