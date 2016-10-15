@@ -98,7 +98,7 @@ def fill_room():
     if json_data is None:
         return json.dumps({"error": "no JSON found"})
     else:
-        room_id = json_data["id"]
+        room_id = json_data["room_id"]
         questions = json_data["question"]
         for q in questions:
             db.exec_query("INSERT INTO question (room_id, question) VALUES (%s, %s)", [room_id, q])
