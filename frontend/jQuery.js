@@ -12,11 +12,11 @@ var server = window.location.href.replace(/[?&]+.*/g, "").replace(/\/$/g, "");
 
 // To encode URI
 function encodeURI(jsonData) {
-    var ret = ["?"];
+    var ret = [];
     for (var d in jsonData) {
         ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(jsonData[d]));
     }
-    return ret.join("&");
+    return "?" + ret.join("&");
 }
 
 // Useful to get a json already parsed, if the third argument is given the query is encoded with encodeURI
@@ -82,7 +82,7 @@ function endEmail(userID, email) {
     urlVars = getUrlVars();
     if ("id" in urlVars) {
         var roomID = urlVars["id"];
-        $.get(`${server}/join_room?${encodeURI({"room_id": roomID, "email": email})}`);
+        $.get(`${server}/join_room${encodeURI({"room_id": roomID, "email": email})}`);
 
         getServerJson("/room_status", function (reply) {
             if (reply.status == "waiting") {
