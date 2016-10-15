@@ -129,7 +129,7 @@ def finish_room():
     # SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
     values = db.exec_query("SELECT u.email , COUNT(qq.id) "
                            "FROM quiz_question qq "
-                           "INNER JOIN Users u ON (qq.asked_user_id = u.id) "
+                           "INNER JOIN users u ON (qq.asked_user_id = u.id) "
                            "INNER JOIN room_members rm ON (u.id = rm.user_id) "
                            "WHERE qq.correct_answer_id = qq.answered_id AND rm.room_id = %s "
                            "GROUP BY u.email "
