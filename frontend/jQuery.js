@@ -178,7 +178,7 @@ function startAdmin(userID) {
                 var roomId = $(this).attr("dbid");
                 var status = $(this).attr('status');
                 if (status == "waiting") {
-                    $.get(server + `/open_room?id=${roomId}`, function () {
+                    $.get(server + `/open_room?room_id=${roomId}`, function () {
                         startAdmin(userID);
                     });
                 } else if (status == "started") {

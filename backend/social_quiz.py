@@ -108,9 +108,9 @@ def fill_room():
 
 @app.route('/open_room')
 def open_room():
-    id_room = request.args.get('room_id')
-    print(id_room)
-    db.exec_query("UPDATE room r SET r.status='started' WHERE r.id = %s", [id_room])
+    room_id = request.args.get('room_id')
+    print(room_id)
+    db.exec_query("UPDATE room r SET r.status='started' WHERE r.id = %s", [room_id])
     return json.dumps({"info": "The room has been opened successfully", "status": "started"})
 
 
