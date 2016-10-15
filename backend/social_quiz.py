@@ -273,7 +273,7 @@ def post_answer():
     correct_answer_id = value[0][1]
     question_id = value[0][2]
 
-    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s ", [correct_answer_id])
+    value = db.exec_query("SELECT a.answer FROM answer a WHERE a.id = %s ", [correct_answer_id])
 
     if len(value) > 0:
         text = value[0][0]
