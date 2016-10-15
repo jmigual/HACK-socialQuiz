@@ -287,7 +287,7 @@ function answerQuiz(questionID, answerID, userID, roomID) {
             alert("Correct answer");
         }
         else {
-            alert("Incorrect answer\n the right answer was: " + serverReply.correctAnswer.text);
+            alert("Incorrect answer\n the right answer was: " + serverReply.correct_answer.text);
         }
         startQuiz(userID, roomID);
     }, {quiz_question_id: questionID, quiz_answer_id: answerID});
