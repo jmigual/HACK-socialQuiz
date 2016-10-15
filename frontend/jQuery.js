@@ -281,7 +281,7 @@ function startQuiz(userID, roomID) {
 
 function answerQuiz(questionID, answerID, userID, roomID) {
     $("#quizAnswerColumn").empty();
-    getServerJson("post_quiz_answer", function (serverReply) {
+    getServerJson("/post_quiz_answer", function (serverReply) {
         console.log(serverReply);
         if (serverReply.correct) {
             alert("Correct answer");
