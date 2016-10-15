@@ -143,9 +143,9 @@ function setQuestions(userID, roomID, questions, answers, i) {
 
 function startAdmin(userID) {
     $("#adminContainer").fadeIn();
-    var newRoom = $("#newRoom");
-    newRoom.off("click");
-    newRoom.click(function () {
+    var nRoom = $("#newRoom");
+    nRoom.off("click");
+    nRoom.click(function () {
         newRoom(userID)
     });
     $("#checkboxContainer").empty();
