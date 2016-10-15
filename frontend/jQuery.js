@@ -82,7 +82,7 @@ function endEmail(userID, email) {
     urlVars = getUrlVars();
     if ("id" in urlVars) {
         var roomID = urlVars["id"];
-        $.get(`${server}/join_room?${encodeURI({"id_room": roomID, "email": email})}`);
+        $.get(`${server}/join_room?${encodeURI({"room_id": roomID, "email": email})}`);
 
         getServerJson("/room_status", function (reply) {
             if (reply.status == "waiting") {
