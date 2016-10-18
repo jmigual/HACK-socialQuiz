@@ -14,7 +14,7 @@ import datab.social_database as db
 app = Flask(__name__)
 
 # Regular expression to only accept certain files
-fileChecker = re.compile(r"(.*\.js|.*\.html|.*\.png)$")
+fileChecker = re.compile(r"(.*\.js|.*\.html|.*\.png|.*\.css|.*\.map)$")
 numberOfAnswers = 4
 
 random.seed(7)
@@ -98,7 +98,7 @@ def fill_room():
     if json_data is None:
         return json.dumps({"error": "no JSON found"})
     else:
-        room_id = json_data["id"]
+        room_id = json_data["room_id"]
         questions = json_data["question"]
         for q in questions:
             db.exec_query("INSERT INTO question (room_id, question) VALUES (%s, %s)", [room_id, q])
@@ -108,9 +108,9 @@ def fill_room():
 
 @app.route('/open_room')
 def open_room():
-    id_room = request.args.get('room_id')
-    print(id_room)
-    db.exec_query("UPDATE room r SET r.status='started' WHERE r.id = %s", [id_room])
+    room_id = request.args.get('room_id')
+    print(room_id)
+    db.exec_query("UPDATE room r SET r.status='started' WHERE r.id = %s", [room_id])
     return json.dumps({"info": "The room has been opened successfully", "status": "started"})
 
 
@@ -129,7 +129,7 @@ def finish_room():
     # SELECT id, COUNT(a.id), COUNT(a.id) FROM Room r INNER JOIN
     values = db.exec_query("SELECT u.email , COUNT(qq.id) "
                            "FROM quiz_question qq "
-                           "INNER JOIN Users u ON (qq.asked_user_id = u.id) "
+                           "INNER JOIN users u ON (qq.asked_user_id = u.id) "
                            "INNER JOIN room_members rm ON (u.id = rm.user_id) "
                            "WHERE qq.correct_answer_id = qq.answered_id AND rm.room_id = %s "
                            "GROUP BY u.email "
@@ -273,7 +273,7 @@ def post_answer():
     correct_answer_id = value[0][1]
     question_id = value[0][2]
 
-    value = db.exec_query("SELECT a.answer FROM Answer a WHERE a.id = %s ", [correct_answer_id])
+    value = db.exec_query("SELECT a.answer FROM answer a WHERE a.id = %s ", [correct_answer_id])
 
     if len(value) > 0:
         text = value[0][0]

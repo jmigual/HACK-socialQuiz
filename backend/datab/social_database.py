@@ -105,7 +105,7 @@ def get_non_answered_people(id_room, id_user):
 
 def get_all_questions(id_room):
     ret = []
-    value = exec_query("SELECT 'id' FROM Question WHERE 'roomId' = %s", [id_room])
+    value = exec_query("SELECT 'id' FROM question WHERE 'roomId' = %s", [id_room])
     for row in value:
         ret.append(row[0])
     return ret

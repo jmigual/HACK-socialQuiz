@@ -12,11 +12,11 @@ var server = window.location.href.replace(/[?&]+.*/g, "").replace(/\/$/g, "");
 
 // To encode URI
 function encodeURI(jsonData) {
-    var ret = ["?"];
+    var ret = [];
     for (var d in jsonData) {
         ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(jsonData[d]));
     }
-    return ret.join("&");
+    return "?" + ret.join("&");
 }
 
 // Useful to get a json already parsed, if the third argument is given the query is encoded with encodeURI
@@ -82,7 +82,7 @@ function endEmail(userID, email) {
     urlVars = getUrlVars();
     if ("id" in urlVars) {
         var roomID = urlVars["id"];
-        $.get(`${server}/join_room?${encodeURI({"id_room": roomID, "email": email})}`);
+        $.get(`${server}/join_room${encodeURI({"room_id": roomID, "email": email})}`);
 
         getServerJson("/room_status", function (reply) {
             if (reply.status == "waiting") {
@@ -143,9 +143,9 @@ function setQuestions(userID, roomID, questions, answers, i) {
 
 function startAdmin(userID) {
     $("#adminContainer").fadeIn();
-    var newRoom = $("#newRoom");
-    newRoom.off("click");
-    newRoom.click(function () {
+    var nRoom = $("#newRoom");
+    nRoom.off("click");
+    nRoom.click(function () {
         newRoom(userID)
     });
     $("#checkboxContainer").empty();
@@ -178,7 +178,7 @@ function startAdmin(userID) {
                 var roomId = $(this).attr("dbid");
                 var status = $(this).attr('status');
                 if (status == "waiting") {
-                    $.get(server + `/openRoom?id=${roomId}`, function () {
+                    $.get(server + `/open_room?room_id=${roomId}`, function () {
                         startAdmin(userID);
                     });
                 } else if (status == "started") {
@@ -281,13 +281,13 @@ function startQuiz(userID, roomID) {
 
 function answerQuiz(questionID, answerID, userID, roomID) {
     $("#quizAnswerColumn").empty();
-    getServerJson("post_quiz_answer", function (serverReply) {
+    getServerJson("/post_quiz_answer", function (serverReply) {
         console.log(serverReply);
         if (serverReply.correct) {
             alert("Correct answer");
         }
         else {
-            alert("Incorrect answer\n the right answer was: " + serverReply.correctAnswer.text);
+            alert("Incorrect answer\n the right answer was: " + serverReply.correct_answer.text);
         }
         startQuiz(userID, roomID);
     }, {quiz_question_id: questionID, quiz_answer_id: answerID});
